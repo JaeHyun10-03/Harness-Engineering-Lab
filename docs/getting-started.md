@@ -55,6 +55,8 @@ python3 .claude/hooks/workflow.py verify
 통과하면 메인이 verifier를 결과 리뷰 모드로 호출합니다. task.md·기준 ID·변경 파일·최신 검사 증거를 전달하고 실제 응답과 지적별 처리 내역을 review.md에 보존합니다. 필수 근거 부족·미해결 중요 지적이 있으면 수정·테스트·재검증합니다.
 
 ```sh
+python3 .claude/hooks/workflow.py review-begin
+# 이 명령 성공 후 verifier 호출·보고서 저장
 python3 .claude/hooks/workflow.py review pass
 python3 .claude/hooks/workflow.py complete
 ```
@@ -92,6 +94,20 @@ checks.json에는 **일반 테스트 → 통과한 경우에만 성능 테스트
 호출이 안 되면 자체 리뷰로 대체하지 말고 원인과 재개 조건을 기록합니다. 실제 호출·도구 제한·보고 전달은 Claude Code 세션에서 별도로 확인해야 합니다.
 기준은 [테스트 기준](testing-policy.md)과 해당 영역의 상세 문서를 사용합니다.
 
+## 역할과 자동 실행
+
+| 담당 | 하는 일 |
+| --- | --- |
+| 클로드 코드 | settings.json에 등록된 시점에 Hook 실행 |
+| 메인 클로드 | 계획·구현·테스트 실행·상태 변경·보고 |
+| verifier | 계획과 코드·테스트·증거를 읽기 전용 검증 |
+| workflow.py | 호출된 명령에 따라 단계 변경·테스트 실행·증거 확인 |
+
+Hook 연결은 .claude/settings.json, 처리 내용은 .claude/hooks/workflow.py에 있습니다.
+Hook이 전체 개발을 진행시키지는 않습니다. 메인이 verify·complete 등 필요한 명령을 호출합니다.
+현재는 메인 한 세션과 읽기 전용 verifier로 작업 하나를 진행합니다.
+CI 병합·배포 차단과 정기 실행은 별도 연결이 필요합니다. 실제 Claude 대화에서의 준수 여부는 앱 실험에서 확인해야 합니다.
+
 ## 자동으로 확인하는 범위
 
 - 목표·범위·완료 기준 항목이 비어 있으면 구현 시작 거부
@@ -127,3 +143,18 @@ python3 -m unittest discover -s tests -v
 
 공식 참고: [Hooks](https://code.claude.com/docs/en/hooks),
 [지침](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills).
+
+## 리뷰 한도와 사용자 결정 후 재개
+
+결과 리뷰는 최초 1회 + 재리뷰 2회입니다. verifier 호출 직전에 review-begin을 실행합니다.
+세 번째 review fail은 실패 종료 코드를 반환하고 작업을 waiting으로 바꿉니다. 회차별 보고서는 evidence/review-N.md에 보존합니다.
+review-begin 후 호출이 실패해도 회차는 소비합니다. block으로 기록하고 호출 결과를 위조하지 않습니다.
+사용자가 추가 리뷰를 명시적으로 허용하면 메인이 다음 명령에 실제 결정 내용을 기록합니다.
+
+```sh
+python3 .claude/hooks/workflow.py review-extend "사용자의 추가 리뷰 1회 허용 내용"
+python3 .claude/hooks/workflow.py start
+```
+
+이는 1회만 추가하고 기존 회차를 초기화하지 않습니다. 다시 구현·verify·review-begin·verifier·review 순서로 진행합니다.
+계획 리뷰와 리뷰만 요청한 작업의 한도는 지침으로 적용합니다. 실제 에이전트 호출·사용자 허락의 진위는 Python이 확인하지 않습니다.

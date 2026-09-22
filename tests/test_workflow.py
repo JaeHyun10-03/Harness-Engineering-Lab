@@ -37,6 +37,7 @@ class WorkflowTests(unittest.TestCase):
             'checks': [{'argv': argv, 'timeout_seconds': timeout}]}))
 
     def pass_review(self):
+        self.run_cli('review-begin')
         (self.task / 'review.md').write_text('완료 기준을 코드와 실제 검사 결과에 대조하여 통과 판정.')
         self.run_cli('review', 'pass')
 
@@ -105,12 +106,59 @@ class WorkflowTests(unittest.TestCase):
         self.run_cli('start')
         self.run_cli('verify')
         (self.task / 'review.md').write_text('완료 조건 누락: 수정 필요')
+        self.run_cli('review-begin')
         self.run_cli('review', 'fail')
         self.run_cli('review', 'pass', expected=1)
         self.run_cli('complete', expected=1)
         self.run_cli('verify')
         self.pass_review()
         self.run_cli('complete')
+
+    def test_review_budget_stops_and_explicit_extension_preserves_history(self):
+        self.run_cli('start')
+        for attempt in range(1, 4):
+            self.run_cli('verify')
+            self.run_cli('review-begin')
+            (self.task / 'review.md').write_text('결함 {}'.format(attempt))
+            self.run_cli('review', 'fail', expected=1 if attempt == 3 else 0)
+        state = json.loads(self.run_cli('status').stdout)
+        self.assertEqual(state['phase'], 'waiting')
+        self.assertEqual(state['review_attempts'], 3)
+        self.run_cli('start', expected=1)
+        self.run_cli('verify', expected=1)
+        self.run_cli('complete', expected=1)
+        self.assertTrue((self.task / 'evidence/review-1.md').exists())
+        self.run_cli('review-extend', expected=1)
+        self.run_cli('review-extend', '사용자가 추가 리뷰 1회 허용')
+        self.run_cli('start')
+        self.run_cli('verify')
+        self.pass_review()
+        self.run_cli('complete')
+        self.assertEqual(json.loads(self.run_cli('status').stdout)['review_attempts'], 4)
+
+    def test_third_review_can_pass_and_begin_is_required(self):
+        self.run_cli('start')
+        for _ in range(2):
+            self.run_cli('verify')
+            self.run_cli('review-begin')
+            (self.task / 'review.md').write_text('수정 필요')
+            self.run_cli('review', 'fail')
+        self.run_cli('verify')
+        (self.task / 'review.md').write_text('통과')
+        self.run_cli('review', 'pass', expected=1)
+        self.pass_review()
+        self.run_cli('complete')
+
+    def test_aborted_review_consumes_budget(self):
+        self.run_cli('start')
+        for _ in range(3):
+            self.run_cli('verify')
+            self.run_cli('review-begin')
+            self.run_cli('review-begin', expected=1)
+            self.run_cli('block', '검증 호출 실패')
+            if _ < 2:
+                self.run_cli('start')
+        self.run_cli('start', expected=1)
 
     def test_check_mutating_source_is_rejected(self):
         self.set_checks([sys.executable, '-c', 'from pathlib import Path; Path("app/main.txt").write_text("changed")'])

@@ -1,0 +1,122 @@
+<svg role="img" aria-label="2. 요청 분류" xmlns="http://www.w3.org/2000/svg" width="767.9100000000001" height="1135.83" viewBox="0 0 767.9100000000001 1135.83">
+<rect x="0" y="0" width="767.9100000000001" height="1135.83" fill="#ffffff" aria-hidden="true" /><g id="graph0" class="graph" transform="translate(30.0 1105.83)">
+<title>G</title>
+<g id="edge1" class="edge">
+<title>start → kind</title><path d="M 175.20,-1014.73 L 175.20,-949.74" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge7" class="edge">
+<title>kind → q</title><path d="M 300.39,-915.18 L 322.39,-915.18 L 322.39,-915.18 L 358.18,-915.18" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="340.28499999999997" y="-926.18" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge8" class="edge">
+<title>kind → isreview</title><path d="M 175.20,-880.62 L 175.20,-826.36 L 175.19,-826.36 L 175.19,-804.36" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="209.2" y="-853.49" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge2" class="edge">
+<title>new → p</title><path d="M 285.39,-467.77 L 343.11,-467.77" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="314.25" y="-478.77" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge3" class="edge">
+<title>new → old</title><path d="M 175.20,-433.21 L 175.20,-368.21" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="209.2" y="-400.71" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge4" class="edge">
+<title>old → clear</title><path d="M 175.20,-303.41 L 175.20,-260.41 L 175.19,-260.41 L 175.19,-238.41" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge5" class="edge">
+<title>clear → resume</title><path d="M 175.19,-126.09 L 175.19,-83.10 L 175.20,-83.10 L 175.20,-61.10" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="195.195" y="-104.595" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge6" class="edge">
+<title>clear → ask</title><path d="M 325.38,-182.25 L 382.96,-182.25" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="354.17" y="-193.25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge9" class="edge">
+<title>isreview → r</title><path d="M 330.39,-769.80 L 388.18,-769.80" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="359.285" y="-780.8" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge10" class="edge">
+<title>isreview → isharness</title><path d="M 175.19,-735.24 L 175.19,-669.71 L 175.20,-669.71 L 175.20,-647.71" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="209.195" y="-702.475" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge11" class="edge">
+<title>isharness → h</title><path d="M 350.40,-613.15 L 372.40,-613.15 L 372.40,-613.15 L 408.49,-613.15" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="390.445" y="-624.15" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge12" class="edge">
+<title>isharness → new</title><path d="M 175.20,-578.59 L 175.20,-502.33" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="230.7" y="-540.46" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오: 개발</text></g>
+
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="175.2" cy="-1045.28" rx="167.39" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-1039.88" font-family="Arial" font-size="18.00">사용자 요청·요청별 지침 읽기</text>
+</g>
+
+<g id="node2" class="node">
+<title>kind</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="175.2,-949.74 50.01,-915.18 175.2,-880.62 300.39,-915.18 175.2,-949.74" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-909.78" font-family="Arial" font-size="18.00">단순 질문인가?</text>
+</g>
+
+<g id="node3" class="node">
+<title>q</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="490.2" cy="-915.18" rx="132.02" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="490.2" y="-909.78" font-family="Arial" font-size="18.00">관련 자료 확인 → 답변</text>
+</g>
+
+<g id="node4" class="node">
+<title>r</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="520.2" cy="-769.8" rx="132.02" ry="45.82" />
+<text xml:space="preserve" text-anchor="middle" x="520.2" y="-775.2" font-family="Arial" font-size="18.00">review-task</text>
+<text xml:space="preserve" text-anchor="middle" x="520.2" y="-753.6" font-family="Arial" font-size="18.00">읽기 전용 검증 → 보고</text>
+</g>
+
+<g id="node5" class="node">
+<title>h</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="558.2" cy="-613.15" rx="149.71" ry="45.82" />
+<text xml:space="preserve" text-anchor="middle" x="558.2" y="-618.55" font-family="Arial" font-size="18.00">결정·실험·관련 설정 확인</text>
+<text xml:space="preserve" text-anchor="middle" x="558.2" y="-596.95" font-family="Arial" font-size="18.00">개선 범위 정하기</text>
+</g>
+
+<g id="node6" class="node">
+<title>new</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="175.2,-502.33 65.01,-467.77 175.2,-433.21 285.39,-467.77 175.2,-502.33" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-462.37" font-family="Arial" font-size="18.00">새 작업인가?</text>
+</g>
+
+<g id="node7" class="node">
+<title>p</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="470.2" cy="-467.77" rx="127.09" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="470.2" y="-462.37" font-family="Arial" font-size="18.00">plan-task → 새 계획</text>
+</g>
+
+<g id="node8" class="node">
+<title>old</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M294.58,-368.21C294.58,-368.21 55.82,-368.21 55.82,-368.21 49.82,-368.21 43.82,-362.21 43.82,-356.21 43.82,-356.21 43.82,-315.41 43.82,-315.41 43.82,-309.41 49.82,-303.41 55.82,-303.41 55.82,-303.41 294.58,-303.41 294.58,-303.41 300.58,-303.41 306.58,-309.41 306.58,-315.41 306.58,-315.41 306.58,-356.21 306.58,-356.21 306.58,-362.21 300.58,-368.21 294.58,-368.21" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-341.21" font-family="Arial" font-size="18.00">status·task.md·progress.md</text>
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-319.61" font-family="Arial" font-size="18.00">실제 코드 대조</text>
+</g>
+
+<g id="node9" class="node">
+<title>clear</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="175.2,-238.41 25.01,-182.25 175.2,-126.09 325.38,-182.25 175.2,-238.41" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-187.65" font-family="Arial" font-size="18.00">기존 작업과 요청의</text>
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-166.05" font-family="Arial" font-size="18.00">관계가 명확한가?</text>
+</g>
+
+<g id="node10" class="node">
+<title>resume</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="175.2" cy="-30.55" rx="147.59" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-25.15" font-family="Arial" font-size="18.00">implement-task → 재개</text>
+</g>
+
+<g id="node11" class="node">
+<title>ask</title>
+<ellipse fill="#f3ede6" stroke="#c4b39b" stroke-width="1.3" cx="536.2" cy="-182.25" rx="153.24" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="536.2" y="-176.85" font-family="Arial" font-size="18.00">사용자에게 관계·범위 확인</text>
+</g>
+
+<g id="node12" class="node">
+<title>isreview</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="175.2,-804.36 20,-769.8 175.2,-735.24 330.39,-769.8 175.2,-804.36" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-764.4" font-family="Arial" font-size="18.00">리뷰만 요청했는가?</text>
+</g>
+
+<g id="node13" class="node">
+<title>isharness</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="175.2,-647.71 0,-613.15 175.2,-578.59 350.4,-613.15 175.2,-647.71" />
+<text xml:space="preserve" text-anchor="middle" x="175.2" y="-607.75" font-family="Arial" font-size="18.00">하네스 개선 요청인가?</text>
+</g>
+</g>
+<defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#71867e" /></marker></defs></svg>

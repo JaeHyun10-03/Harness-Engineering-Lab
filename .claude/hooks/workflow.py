@@ -114,8 +114,18 @@ def complete_evidence(state):
         raise ValueError('검토 등록 이후 보고서가 변경되었습니다. 검토를 다시 등록하세요.')
 
 
+def review_budget(state):
+    if state.get('review_attempts', 0) >= state.get('review_limit', 3):
+        state['phase'] = 'waiting'
+        state['reason'] = '리뷰 한도 도달. 남은 문제·영향·수정 내역·미해결 이유·선택지를 보고하고 사용자 결정을 기다리세요.'
+        save(state)
+        raise ValueError(state['reason'])
+
+
 def verify(state):
     require_phase(state, {'implementing', 'reviewing', 'ready'})
+    review_budget(state)
+    state.pop('review_pending', None)
     checks = read_json(ROOT / '.claude/checks.json')['checks']
     if not isinstance(checks, list) or not checks:
         raise ValueError('.claude/checks.json에 앱의 필수 검사 명령을 먼저 등록하세요.')
@@ -205,7 +215,7 @@ def hook(event):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=['new', 'status', 'start', 'verify', 'review',
-                        'complete', 'wait', 'block', 'hook-session', 'hook-edit', 'hook-stop'])
+                        'complete', 'wait', 'block', 'review-begin', 'review-extend', 'hook-session', 'hook-edit', 'hook-stop'])
     parser.add_argument('value', nargs='?')
     args = parser.parse_args()
     if args.command.startswith('hook-'):
@@ -233,6 +243,8 @@ def main():
     directory = task_dir(state)
     if args.command == 'start':
         require_phase(state, {'planning', 'waiting', 'blocked', 'implementing', 'verifying', 'reviewing', 'ready'})
+        review_budget(state)
+        state.pop('review_pending', None)
         body = (directory / 'task.md').read_text(encoding='utf-8')
         for heading in ('목표', '범위', '완료 기준'):
             match = re.search(r'^## ' + heading + r'\n(.*?)(?=^## |\Z)', body, re.M | re.S)
@@ -243,18 +255,46 @@ def main():
         save(state)
     elif args.command == 'verify':
         verify(state)
+    elif args.command == 'review-begin':
+        require_phase(state, {'reviewing'})
+        if state.get('review_pending'):
+            raise ValueError('진행 중인 리뷰를 먼저 등록하거나 block으로 기록하세요.')
+        review_budget(state)
+        receipt = checked(state)
+        state['review_attempts'] = state.get('review_attempts', 0) + 1
+        state['review_pending'] = receipt['snapshot']
+        save(state)
+        print('리뷰 {}/{} 시작'.format(state['review_attempts'], state.get('review_limit', 3)))
+    elif args.command == 'review-extend':
+        require_phase(state, {'waiting', 'blocked'})
+        if not args.value or not args.value.strip():
+            raise ValueError('사용자가 추가 리뷰 1회를 허용한 결정 내용을 기록하세요.')
+        if state.get('review_attempts', 0) < state.get('review_limit', 3):
+            raise ValueError('리뷰 한도가 아직 남아 있습니다.')
+        # This records user authorization; the program cannot authenticate a conversation.
+        state.setdefault('review_extensions', []).append({'reason': args.value, 'at': datetime.now(timezone.utc).isoformat()})
+        state['review_limit'] = state.get('review_limit', 3) + 1
+        state.pop('review_pending', None)
+        save(state)
     elif args.command == 'review':
         require_phase(state, {'reviewing'})
         receipt = checked(state)
         if args.value not in {'pass', 'fail'}:
             raise ValueError('review pass 또는 review fail을 지정하세요.')
+        if state.get('review_pending') != receipt['snapshot']:
+            raise ValueError('최신 검사 후 review-begin으로 리뷰를 시작하세요.')
         report = (directory / 'review.md').read_bytes()
         if not report.strip():
             raise ValueError('검토 근거를 review.md에 작성하세요.')
         write_json(directory / 'evidence/review.json', {'verdict': args.value,
                    'snapshot': receipt['snapshot'], 'report_hash': hashlib.sha256(report).hexdigest()})
+        attempt = state['review_attempts']
+        (directory / 'evidence' / ('review-{}.md'.format(attempt))).write_bytes(report)
+        state.pop('review_pending', None)
         state['phase'] = 'ready' if args.value == 'pass' else 'implementing'
         save(state)
+        if args.value == 'fail':
+            review_budget(state)
     elif args.command == 'complete':
         require_phase(state, {'ready'})
         complete_evidence(state)

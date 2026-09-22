@@ -1,0 +1,90 @@
+<svg role="img" aria-label="1. 시작" xmlns="http://www.w3.org/2000/svg" width="739.6" height="956.9799999999999" viewBox="0 0 739.6 956.9799999999999">
+<rect x="0" y="0" width="739.6" height="956.9799999999999" fill="#ffffff" aria-hidden="true" /><g id="graph0" class="graph" transform="translate(30.0 926.9799999999999)">
+<title>G</title>
+<g id="edge1" class="edge">
+<title>start → load</title><path d="M 184.23,-835.88 L 184.23,-792.88 L 184.24,-792.88 L 184.24,-770.88" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge2" class="edge">
+<title>load → enabled</title><path d="M 184.24,-706.08 L 184.24,-641.08" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge3" class="edge">
+<title>enabled → skip</title><path d="M 368.47,-584.92 L 390.47,-584.92 L 390.47,-584.92 L 426.86,-584.92" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="408.665" y="-595.92" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge4" class="edge">
+<title>enabled → call</title><path d="M 184.24,-528.76 L 184.24,-463.76" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="204.235" y="-496.26" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge5" class="edge">
+<title>call → state</title><path d="M 184.24,-420.56 L 184.24,-355.56" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge6" class="edge">
+<title>state → active</title><path d="M 184.24,-286.44 L 184.24,-243.44 L 184.23,-243.44 L 184.23,-221.44" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="211.235" y="-264.94" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">있음</text></g>
+
+<g id="edge7" class="edge">
+<title>state → none</title><path d="M 344.43,-321.00 L 402.37,-321.00" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="373.4" y="-332.0" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">없음</text></g>
+
+<g id="edge8" class="edge">
+<title>active → next</title><path d="M 184.23,-156.64 L 184.23,-113.64 L 184.23,-113.64 L 184.23,-91.64" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge9" class="edge">
+<title>none → next</title><path d="M 402.37,-321.00 L 380.37,-321.00 L 380.37,-144.64 L 184.23,-144.64 L 184.23,-91.64" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="184.23" cy="-866.43" rx="96.66" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-861.03" font-family="Arial" font-size="18.00">세션 시작·재개</text>
+</g>
+
+<g id="node2" class="node">
+<title>load</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M281.6,-770.88C281.6,-770.88 86.87,-770.88 86.87,-770.88 80.87,-770.88 74.87,-764.88 74.87,-758.88 74.87,-758.88 74.87,-718.08 74.87,-718.08 74.87,-712.08 80.87,-706.08 86.87,-706.08 86.87,-706.08 281.6,-706.08 281.6,-706.08 287.6,-706.08 293.6,-712.08 293.6,-718.08 293.6,-718.08 293.6,-758.88 293.6,-758.88 293.6,-764.88 287.6,-770.88 281.6,-770.88" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-743.88" font-family="Arial" font-size="18.00">CLAUDE.md·rules 로딩</text>
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-722.28" font-family="Arial" font-size="18.00">settings.json 처리</text>
+</g>
+
+<g id="node3" class="node">
+<title>enabled</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="184.23,-641.08 0,-584.92 184.23,-528.76 368.47,-584.92 184.23,-641.08" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-590.32" font-family="Arial" font-size="18.00">SessionStart Hook이</text>
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-568.72" font-family="Arial" font-size="18.00">활성화되어 있는가?</text>
+</g>
+
+<g id="node4" class="node">
+<title>skip</title>
+<ellipse fill="#f3ede6" stroke="#c4b39b" stroke-width="1.3" cx="553.23" cy="-584.92" rx="126.37" ry="45.82" />
+<text xml:space="preserve" text-anchor="middle" x="553.23" y="-590.32" font-family="Arial" font-size="18.00">시작 Hook 안내 없음</text>
+<text xml:space="preserve" text-anchor="middle" x="553.23" y="-568.72" font-family="Arial" font-size="18.00">설정·연결 확인</text>
+</g>
+
+<g id="node5" class="node">
+<title>call</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M258.61,-463.76C258.61,-463.76 109.86,-463.76 109.86,-463.76 103.86,-463.76 97.86,-457.76 97.86,-451.76 97.86,-451.76 97.86,-432.56 97.86,-432.56 97.86,-426.56 103.86,-420.56 109.86,-420.56 109.86,-420.56 258.61,-420.56 258.61,-420.56 264.61,-420.56 270.61,-426.56 270.61,-432.56 270.61,-432.56 270.61,-451.76 270.61,-451.76 270.61,-457.76 264.61,-463.76 258.61,-463.76" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-436.76" font-family="Arial" font-size="18.00">hook-session 실행</text>
+</g>
+
+<g id="node6" class="node">
+<title>state</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="184.23,-355.56 24.04,-321 184.23,-286.44 344.43,-321 184.23,-355.56" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-315.6" font-family="Arial" font-size="18.00">현재 작업이 있는가?</text>
+</g>
+
+<g id="node7" class="node">
+<title>active</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M255.59,-221.44C255.59,-221.44 112.88,-221.44 112.88,-221.44 106.88,-221.44 100.88,-215.44 100.88,-209.44 100.88,-209.44 100.88,-168.64 100.88,-168.64 100.88,-162.64 106.88,-156.64 112.88,-156.64 112.88,-156.64 255.59,-156.64 255.59,-156.64 261.59,-156.64 267.59,-162.64 267.59,-168.64 267.59,-168.64 267.59,-209.44 267.59,-209.44 267.59,-215.44 261.59,-221.44 255.59,-221.44" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-194.44" font-family="Arial" font-size="18.00">작업 ID·단계</text>
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-172.84" font-family="Arial" font-size="18.00">읽을 문서 위치 안내</text>
+</g>
+
+<g id="node8" class="node">
+<title>none</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M632.09,-342.6C632.09,-342.6 414.37,-342.6 414.37,-342.6 408.37,-342.6 402.37,-336.6 402.37,-330.6 402.37,-330.6 402.37,-311.4 402.37,-311.4 402.37,-305.4 408.37,-299.4 414.37,-299.4 414.37,-299.4 632.09,-299.4 632.09,-299.4 638.09,-299.4 644.09,-305.4 644.09,-311.4 644.09,-311.4 644.09,-330.6 644.09,-330.6 644.09,-336.6 638.09,-342.6 632.09,-342.6" />
+<text xml:space="preserve" text-anchor="middle" x="523.23" y="-315.6" font-family="Arial" font-size="18.00">기본 지침·작업 목록 위치 안내</text>
+</g>
+
+<g id="node9" class="node">
+<title>next</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="184.23" cy="-45.82" rx="153.24" ry="45.82" />
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-51.22" font-family="Arial" font-size="18.00">요청 분류로</text>
+<text xml:space="preserve" text-anchor="middle" x="184.23" y="-29.62" font-family="Arial" font-size="18.00">문서 본문은 필요할 때 읽기</text>
+</g>
+</g>
+<defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#71867e" /></marker></defs></svg>

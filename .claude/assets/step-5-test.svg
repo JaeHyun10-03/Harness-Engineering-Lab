@@ -1,0 +1,172 @@
+<svg role="img" aria-label="5. 테스트" xmlns="http://www.w3.org/2000/svg" width="945.2199999999999" height="1773.74" viewBox="0 0 945.2199999999999 1773.74">
+<rect x="0" y="0" width="945.2199999999999" height="1773.74" fill="#ffffff" aria-hidden="true" /><g id="graph0" class="graph" transform="translate(-71.85 1743.74)">
+<title>G</title>
+<g id="edge1" class="edge">
+<title>start → room</title><path d="M 304.05,-1652.64 L 304.05,-1609.64 L 304.06,-1609.64 L 304.06,-1587.64" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge2" class="edge">
+<title>room → wait</title><path d="M 404.23,-1531.48 L 462.02,-1531.48" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="433.125" y="-1542.48" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge3" class="edge">
+<title>room → config</title><path d="M 304.06,-1475.32 L 304.06,-1432.32 L 304.05,-1432.32 L 304.05,-1410.32" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.055" y="-1453.82" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge4" class="edge">
+<title>config → setup</title><path d="M 434.24,-1354.16 L 456.24,-1354.16 L 456.24,-1354.16 L 492.07,-1354.16" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="474.155" y="-1365.16" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge5" class="edge">
+<title>config → before</title><path d="M 304.05,-1298.00 L 304.05,-1255.00 L 304.06,-1255.00 L 304.06,-1233.00" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.05" y="-1276.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge6" class="edge">
+<title>before → normal</title><path d="M 304.06,-1168.20 L 304.06,-1103.20" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge8" class="edge">
+<title>normal → need</title><path d="M 304.06,-1034.08 L 304.06,-969.08" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.055" y="-1001.5799999999999" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge7" class="edge">
+<title>normal → fail</title><path d="M 449.25,-1068.64 L 616.05,-1068.64 L 616.05,-307.12" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="650.055" y="-687.8799999999999" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge10" class="edge">
+<title>need → perf</title><path d="M 304.06,-899.96 L 304.06,-856.96 L 304.05,-856.96 L 304.05,-834.96" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.055" y="-878.46" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge9" class="edge">
+<title>need → record</title><path d="M 494.26,-934.52 L 516.26,-934.52 L 516.26,-614.64 L 304.06,-614.64 L 304.06,-592.64" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="410.1575" y="-625.64" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오: 계획에 이유 기록</text></g>
+
+<g id="edge11" class="edge">
+<title>perf → target</title><path d="M 304.05,-791.76 L 304.05,-726.76" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge13" class="edge">
+<title>target → record</title><path d="M 304.05,-657.64 L 304.05,-614.64 L 304.06,-614.64 L 304.06,-592.64" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.055" y="-603.64" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge12" class="edge">
+<title>target → fail</title><path d="M 434.24,-692.20 L 506.26,-692.20 L 506.26,-329.12 L 616.05,-329.12 L 616.05,-307.12" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="568.26" y="-510.66" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오·미실행</text></g>
+
+<g id="edge14" class="edge">
+<title>record → stable</title><path d="M 304.06,-549.44 L 304.06,-484.44" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge16" class="edge">
+<title>stable → fail</title><path d="M 469.25,-428.28 L 491.25,-428.28 L 491.25,-329.12 L 616.05,-329.12 L 616.05,-307.12" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="553.6524999999999" y="-340.12" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge15" class="edge">
+<title>stable → done</title><path d="M 304.06,-372.12 L 304.06,-327.27 L 304.05,-327.27 L 304.05,-305.27" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="324.055" y="-349.69500000000005" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge17" class="edge">
+<title>fail → can</title><path d="M 501.68,-274.72 L 479.68,-274.72 L 479.68,-199.32 L 465.06,-199.32 L 465.06,-177.32" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /></g>
+
+<g id="edge18" class="edge">
+<title>can → pause</title><path d="M 665.26,-142.76 L 723.03,-142.76" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="694.145" y="-153.76" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">아니오</text></g>
+
+<g id="edge19" class="edge">
+<title>can → fix</title><path d="M 465.06,-108.20 L 465.06,-65.20 L 347.06,-65.20 L 347.06,-43.20" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="406.055" y="-76.2" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">예</text></g>
+
+<g id="edge20" class="edge">
+<title>fix → room</title><path d="M 435.41,-21.60 L 457.41,-21.60 L 457.41,-96.20 L 101.85,-96.20 L 101.85,-1531.48 L 203.88,-1531.48" fill="none" stroke="#71867e" stroke-width="1.4" marker-end="url(#flow-arrow)" /><text x="526.9100000000001" y="-58.900000000000006" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#4f625a" stroke="white" stroke-width="5" paint-order="stroke" stroke-linejoin="round">재테스트 전 확인</text></g>
+
+<g id="node1" class="node">
+<title>start</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="304.05" cy="-1683.19" rx="165.29" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1677.79" font-family="Arial" font-size="18.00">task.md·checks.json 확인</text>
+</g>
+
+<g id="node2" class="node">
+<title>room</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-1587.64 203.88,-1531.48 304.05,-1475.32 404.23,-1531.48 304.05,-1587.64" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1536.88" font-family="Arial" font-size="18.00">리뷰 회차가</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1515.28" font-family="Arial" font-size="18.00">남았는가?</text>
+</g>
+
+<g id="node3" class="node">
+<title>wait</title>
+<ellipse fill="#f3ede6" stroke="#c4b39b" stroke-width="1.3" cx="623.05" cy="-1531.48" rx="161.03" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="623.05" y="-1526.08" font-family="Arial" font-size="18.00">waiting → 사용자 결정 대기</text>
+</g>
+
+<g id="node4" class="node">
+<title>config</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-1410.32 173.86,-1354.16 304.05,-1298 434.24,-1354.16 304.05,-1410.32" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1359.56" font-family="Arial" font-size="18.00">단계·명령·환경</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1337.96" font-family="Arial" font-size="18.00">실행 준비 완료?</text>
+</g>
+
+<g id="node5" class="node">
+<title>setup</title>
+<ellipse fill="#f3ede6" stroke="#c4b39b" stroke-width="1.3" cx="629.05" cy="-1354.16" rx="136.98" ry="45.82" />
+<text xml:space="preserve" text-anchor="middle" x="629.05" y="-1359.56" font-family="Arial" font-size="18.00">설정·환경 복구 / block</text>
+<text xml:space="preserve" text-anchor="middle" x="629.05" y="-1337.96" font-family="Arial" font-size="18.00">준비 후 다시 시작</text>
+</g>
+
+<g id="node6" class="node">
+<title>before</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M409.41,-1233C409.41,-1233 198.7,-1233 198.7,-1233 192.7,-1233 186.7,-1227 186.7,-1221 186.7,-1221 186.7,-1180.2 186.7,-1180.2 186.7,-1174.2 192.7,-1168.2 198.7,-1168.2 198.7,-1168.2 409.41,-1168.2 409.41,-1168.2 415.41,-1168.2 421.41,-1174.2 421.41,-1180.2 421.41,-1180.2 421.41,-1221 421.41,-1221 421.41,-1227 415.41,-1233 409.41,-1233" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1206" font-family="Arial" font-size="18.00">verify → 테스트 전 코드 식별</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1184.4" font-family="Arial" font-size="18.00">일반 테스트 실행</text>
+</g>
+
+<g id="node7" class="node">
+<title>normal</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-1103.2 158.86,-1068.64 304.05,-1034.08 449.25,-1068.64 304.05,-1103.2" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-1063.24" font-family="Arial" font-size="18.00">일반 테스트 통과?</text>
+</g>
+
+<g id="node8" class="node">
+<title>need</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-969.08 113.85,-934.52 304.05,-899.96 494.26,-934.52 304.05,-969.08" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-929.12" font-family="Arial" font-size="18.00">성능 테스트가 필요한가?</text>
+</g>
+
+<g id="node9" class="node">
+<title>perf</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M407.91,-834.96C407.91,-834.96 200.19,-834.96 200.19,-834.96 194.19,-834.96 188.19,-828.96 188.19,-822.96 188.19,-822.96 188.19,-803.76 188.19,-803.76 188.19,-797.76 194.19,-791.76 200.19,-791.76 200.19,-791.76 407.91,-791.76 407.91,-791.76 413.91,-791.76 419.91,-797.76 419.91,-803.76 419.91,-803.76 419.91,-822.96 419.91,-822.96 419.91,-828.96 413.91,-834.96 407.91,-834.96" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-807.96" font-family="Arial" font-size="18.00">통합 명령이 성능 테스트 실행</text>
+</g>
+
+<g id="node10" class="node">
+<title>target</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-726.76 173.86,-692.2 304.05,-657.64 434.24,-692.2 304.05,-726.76" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-686.8" font-family="Arial" font-size="18.00">성능 목표 충족?</text>
+</g>
+
+<g id="node11" class="node">
+<title>record</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M397.91,-592.64C397.91,-592.64 210.2,-592.64 210.2,-592.64 204.2,-592.64 198.2,-586.64 198.2,-580.64 198.2,-580.64 198.2,-561.44 198.2,-561.44 198.2,-555.44 204.2,-549.44 210.2,-549.44 210.2,-549.44 397.91,-549.44 397.91,-549.44 403.91,-549.44 409.91,-555.44 409.91,-561.44 409.91,-561.44 409.91,-580.64 409.91,-580.64 409.91,-586.64 403.91,-592.64 397.91,-592.64" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-565.64" font-family="Arial" font-size="18.00">종료 코드·로그·결과 저장</text>
+</g>
+
+<g id="node12" class="node">
+<title>stable</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="304.05,-484.44 138.86,-428.28 304.05,-372.12 469.25,-428.28 304.05,-484.44" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-433.68" font-family="Arial" font-size="18.00">코드 변경 없음 +</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-412.08" font-family="Arial" font-size="18.00">필수 명령 모두 성공?</text>
+</g>
+
+<g id="node13" class="node">
+<title>fail</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M718.43,-307.12C718.43,-307.12 513.68,-307.12 513.68,-307.12 507.68,-307.12 501.68,-301.12 501.68,-295.12 501.68,-295.12 501.68,-254.32 501.68,-254.32 501.68,-248.32 507.68,-242.32 513.68,-242.32 513.68,-242.32 718.43,-242.32 718.43,-242.32 724.43,-242.32 730.43,-248.32 730.43,-254.32 730.43,-254.32 730.43,-295.12 730.43,-295.12 730.43,-301.12 724.43,-307.12 718.43,-307.12" />
+<text xml:space="preserve" text-anchor="middle" x="616.05" y="-280.12" font-family="Arial" font-size="18.00">실패 기록 → implementing</text>
+<text xml:space="preserve" text-anchor="middle" x="616.05" y="-258.52" font-family="Arial" font-size="18.00">환경 문제는 block</text>
+</g>
+
+<g id="node14" class="node">
+<title>can</title>
+<polygon fill="#f9f5e9" stroke="#c4b894" stroke-width="1.3" points="465.05,-177.32 264.85,-142.76 465.05,-108.2 665.26,-142.76 465.05,-177.32" />
+<text xml:space="preserve" text-anchor="middle" x="465.05" y="-137.36" font-family="Arial" font-size="18.00">지금 수정·복구 가능한가?</text>
+</g>
+
+<g id="node15" class="node">
+<title>pause</title>
+<ellipse fill="#f3ede6" stroke="#c4b39b" stroke-width="1.3" cx="855.05" cy="-142.76" rx="132.02" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="855.05" y="-137.36" font-family="Arial" font-size="18.00">미완료·재개 조건 보고</text>
+</g>
+
+<g id="node16" class="node">
+<title>fix</title>
+<path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M423.41,-43.2C423.41,-43.2 270.7,-43.2 270.7,-43.2 264.7,-43.2 258.7,-37.2 258.7,-31.2 258.7,-31.2 258.7,-12 258.7,-12 258.7,-6 264.7,0 270.7,0 270.7,0 423.41,0 423.41,0 429.41,0 435.41,-6 435.41,-12 435.41,-12 435.41,-31.2 435.41,-31.2 435.41,-37.2 429.41,-43.2 423.41,-43.2" />
+<text xml:space="preserve" text-anchor="middle" x="347.05" y="-16.2" font-family="Arial" font-size="18.00">구현으로 돌아가 수정</text>
+</g>
+
+<g id="node17" class="node">
+<title>done</title>
+<ellipse fill="#eaf1f7" stroke="#a9bdcc" stroke-width="1.3" cx="304.05" cy="-274.72" rx="139.82" ry="30.55" />
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-269.32" font-family="Arial" font-size="18.00">reviewing → 결과 리뷰</text>
+</g>
+</g>
+<defs><marker id="flow-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="#71867e" /></marker></defs></svg>

@@ -1,0 +1,63 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.35", nodesep="0.8", ranksep="0.9", splines=ortho, outputorder=edgesfirst];
+node [shape=box, style="rounded,filled", fillcolor="#f1f6f3", color="#a9beb5", fontname="Arial", fontsize=18, margin="0.22,0.15", penwidth=1.3];
+edge [color="#71867e", fontcolor="#4f625a", fontname="Arial", fontsize=15, penwidth=1.4, arrowsize=0.8];
+start [label="시작 · 지침과 현재 작업 안내", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc", group=main];
+kind [label="개발 요청인가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+plan [label="계획·재개와 계획 검증\n상세 흐름: 3단계", shape=box, peripheries=2, group=main];
+proceed [label="계획 확정 +\n구현 요청 있음?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+planend [label="계획 보고 또는 선택 대기\n구현하지 않음", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+budget [label="리뷰 회차가\n남았는가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+build [label="start → 구현·기록\n상세 흐름: 4단계", shape=box, peripheries=2, group=main];
+test [label="일반·필요한 성능 테스트\n상세 흐름: 5단계", shape=box, peripheries=2, group=main];
+tested [label="테스트 통과 +\n최신 증거?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+recover [label="지금 수정·복구\n가능한가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09"];
+blocked [label="wait / block\n원인·재개 조건 보고", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+review [label="review-begin → verifier\n상세 흐름: 6단계", shape=box, peripheries=2, group=main];
+verdict [label="리뷰 결과는?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+pass [label="review pass 등록", group=main];
+fail [label="review fail 등록"];
+callfail [label="block / wait\n호출·근거·이견 보고", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+complete [label="complete\n상태·증거 확인", group=main];
+valid [label="완료 조건 충족?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+done [label="done → 결과 보고\nStop Hook 확인", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc", group=main];
+wait [label="한도 도달 → waiting\n남은 문제·선택지 보고"];
+extend [label="사용자가 추가 리뷰\n1회를 허락했는가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09"];
+hold [label="미완료로 보류", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+extra [label="review-extend\n한도 +1 · 횟수 유지"];
+other [label="질문·리뷰·하네스 개선\n2단계 참고", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc"];
+{ rank=same; proceed; planend; }
+{ rank=same; budget; wait; }
+{ rank=same; recover; blocked; }
+{ rank=same; verdict; fail; }
+{ rank=same; verdict; callfail; }
+{ rank=same; extend; hold; }
+{ rank=same; kind; other; }
+start -> kind [xlabel="", weight=30,headport=n, headclip=false];
+kind -> plan [xlabel="예", weight=30,tailport=s, tailclip=false];
+plan -> proceed [xlabel="", weight=30,headport=n, headclip=false];
+proceed -> planend [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+proceed -> budget [xlabel="예", weight=30,tailport=s, tailclip=false, headport=n, headclip=false];
+budget -> build [xlabel="예", weight=30,tailport=s, tailclip=false];
+budget -> wait [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+build -> test [xlabel="", weight=30];
+test -> tested [xlabel="", weight=30,headport=n, headclip=false];
+tested -> review [xlabel="예", weight=30,tailport=s, tailclip=false];
+tested -> recover [xlabel="아니오", weight=1,tailport=e, tailclip=false, headport=n, headclip=false];
+recover -> budget [xlabel="가능", weight=1,tailport=s, tailclip=false, headport=w, headclip=false];
+recover -> blocked [xlabel="불가·선택 필요", weight=1,tailport=e, tailclip=false];
+review -> verdict [xlabel="", weight=30,headport=n, headclip=false];
+verdict -> pass [xlabel="통과 권고·필수 근거 충족", weight=30,tailport=s, tailclip=false];
+verdict -> fail [xlabel="실제 결함", weight=1,tailport=e, tailclip=false];
+verdict -> callfail [xlabel="호출 불가·근거 부족·이견", weight=1,tailport=w, tailclip=false];
+fail -> budget [xlabel="수정 전 회차 확인", weight=1,headport=w, headclip=false];
+pass -> complete [xlabel="", weight=30];
+complete -> valid [xlabel="", weight=30,headport=n, headclip=false];
+valid -> done [xlabel="예", weight=30,tailport=s, tailclip=false];
+valid -> recover [xlabel="아니오", weight=1,tailport=e, tailclip=false, headport=n, headclip=false];
+wait -> extend [xlabel="", weight=1,headport=n, headclip=false];
+extend -> extra [xlabel="명시적 허락", weight=1,tailport=s, tailclip=false];
+extend -> hold [xlabel="없음·보류", weight=1,tailport=e, tailclip=false];
+extra -> budget [xlabel="", weight=1,headport=w, headclip=false];
+kind -> other [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+}

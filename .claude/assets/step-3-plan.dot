@@ -1,0 +1,50 @@
+digraph G {
+graph [rankdir=TB, bgcolor="white", pad="0.35", nodesep="0.8", ranksep="0.9", splines=ortho, outputorder=edgesfirst];
+node [shape=box, style="rounded,filled", fillcolor="#f1f6f3", color="#a9beb5", fontname="Arial", fontsize=18, margin="0.22,0.15", penwidth=1.3];
+edge [color="#71867e", fontcolor="#4f625a", fontname="Arial", fontsize=15, penwidth=1.4, arrowsize=0.8];
+start [label="작업 목록·상태·관련 코드 확인", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc", group=main];
+new [label="새 작업인가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+create [label="new → 작업 문서 생성", group=main];
+resume [label="기존 기록과 실제 코드 대조"];
+write [label="목표·범위·완료 기준 작성\n영역별 테스트 기준·명령·증거 연결", group=main];
+choice [label="중요한 결정이\n남았는가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+ask [label="wait → 장단점·선택지 보고\n사용자 결정 대기", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+perf [label="기존 기능 개선 +\n성능 테스트 필요?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+base [label="구현 전 기준 성능 측정\n동일한 비교 조건 기록"];
+budget [label="계획 리뷰가\n3회 미만인가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+limit [label="자동 수정 중단\n남은 문제·선택지 보고", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+v [label="verifier 계획 검증\n호출 회차·실제 응답 보존", group=main];
+result [label="검증 결과는?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+fix [label="필수 누락 보완\n선택적 개선 제외"];
+fail [label="block / wait\n호출·근거·이견 보고", shape=oval, fillcolor="#f3ede6", color="#c4b39b"];
+implement [label="구현까지 요청받았는가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+go [label="계획 확정 → 구현", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc", group=main];
+end [label="계획 결과 보고 후 종료", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc"];
+{ rank=same; new; resume; }
+{ rank=same; choice; ask; }
+{ rank=same; perf; base; }
+{ rank=same; budget; limit; }
+{ rank=same; result; fix; }
+{ rank=same; result; fail; }
+{ rank=same; implement; end; }
+start -> new [xlabel="", weight=30,headport=n, headclip=false];
+new -> create [xlabel="예", weight=30,tailport=s, tailclip=false];
+new -> resume [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+create -> write [xlabel="", weight=30];
+resume -> write [xlabel="", weight=1];
+write -> choice [xlabel="", weight=30,headport=n, headclip=false];
+choice -> ask [xlabel="예", weight=1,tailport=e, tailclip=false];
+choice -> perf [xlabel="아니오", weight=30,tailport=s, tailclip=false, headport=n, headclip=false];
+perf -> base [xlabel="예", weight=1,tailport=e, tailclip=false];
+perf -> budget [xlabel="아니오", weight=30,tailport=s, tailclip=false, headport=n, headclip=false];
+base -> budget [xlabel="", weight=1,headport=n, headclip=false];
+budget -> limit [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+budget -> v [xlabel="예", weight=30,tailport=s, tailclip=false];
+v -> result [xlabel="", weight=30,headport=n, headclip=false];
+result -> fix [xlabel="필수 누락", weight=1,tailport=e, tailclip=false];
+fix -> write [xlabel="계획 수정 후 재검증", weight=1];
+result -> fail [xlabel="호출 불가·판단 불가", weight=1,tailport=w, tailclip=false];
+result -> implement [xlabel="통과 권고", weight=30,tailport=s, tailclip=false, headport=n, headclip=false];
+implement -> go [xlabel="예", weight=30,tailport=s, tailclip=false];
+implement -> end [xlabel="아니오", weight=1,tailport=e, tailclip=false];
+}
