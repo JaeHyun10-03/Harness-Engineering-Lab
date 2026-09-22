@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-session", "timeout": 10}]}],
+    "PreToolUse": [{"matcher": "Edit|Write", "hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-edit", "timeout": 10}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-stop", "timeout": 30}]}]
+  }
+}
