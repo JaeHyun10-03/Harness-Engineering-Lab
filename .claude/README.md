@@ -47,6 +47,7 @@
 │       └── evidence/                 # 테스트·리뷰 시 생성하는 증거
 │           ├── checks.json           # 테스트 결과·코드 지문
 │           ├── check-*.log           # 테스트 실행 로그
+│           ├── changes.txt           # 검사 시점의 git 변경 목록
 │           ├── review.json           # 리뷰 판정·보고서 지문
 │           └── review-N.md           # 회차별 리뷰 보고서
 │
@@ -67,24 +68,16 @@
 ├── agents/                           # 별도 문맥에서 검증하는 담당
 │   └── verifier.md                   # 계획·결과 읽기 전용 검증
 │
-├── settings.json                     # 권한·Hook 연결 설정
+├── settings.json                     # 거부 권한·Hook 연결 설정
 │
 ├── hooks/
 │   └── workflow.py                   # 상태 전환·자동 테스트 프로그램
 │
 ├── checks.json                       # 실행할 필수 테스트 명령
 │
-├── README.md
-│
-└── assets/                           # 설명서용 시각화
-    ├── workflow.svg                  # 전체 작업 흐름
-    ├── workflow.html                 # 전체 흐름 확대 보기
-    ├── step-*.svg                    # 1~7단계별 흐름 그림
-    ├── step-*.html                   # 단계별 확대 보기
-    ├── index.html                    # 모든 그림 모아보기
-    ├── *.dot                        # 분기·반복을 정의한 순서도 원본
-    └── build_diagrams.py             # DOT·SVG·HTML 생성 도구
-    └── orthogonal_routes.py   # 꼭짓점 연결·직각 경로 계산
+└── README.md
+
+docs/assets/                          # 설명서용 시각화 (build_diagrams.py로 생성)
 ```
 
 <br/><br/>
@@ -111,17 +104,17 @@
 
 > 위에서 아래로 화살표를 따라 읽습니다. 마름모는 조건 판단이며, 화살표의 예·아니오·통과·실패에 따라 경로가 갈라집니다. 되돌아가는 화살표는 반복이고, 대기·보류는 자동 진행을 멈추는 지점입니다.
 
-<img src="assets/workflow.svg" alt="작업 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/workflow.svg" alt="작업 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[확대해서 보기](assets/workflow.html) · [단계별 그림 모아보기](assets/index.html)
+[확대해서 보기](../docs/assets/workflow.html) · [단계별 그림 모아보기](../docs/assets/index.html)
 
 <br/><br/>
 
 ### 1. 시작 : 공통 기준과 현재 작업 확인
 
-<img src="assets/step-1-start.svg" alt="1단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-1-start.svg" alt="1단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-1-start.html)
+[이 단계 크게 보기](../docs/assets/step-1-start.html)
 
 사용 파일: CLAUDE.md, rules/, settings.json, tasks/active.json
 
@@ -134,9 +127,9 @@
 
 ### 2. 요청 분류 : 필요한 절차 선택
 
-<img src="assets/step-2-route.svg" alt="2단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-2-route.svg" alt="2단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-2-route.html)
+[이 단계 크게 보기](../docs/assets/step-2-route.html)
 
 사용 파일: CLAUDE.md, 선택한 스킬의 SKILL.md
 
@@ -156,9 +149,9 @@
 
 ### 3. 계획·재개 : 할 일과 완료 기준 확정
 
-<img src="assets/step-3-plan.svg" alt="3단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-3-plan.svg" alt="3단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-3-plan.html)
+[이 단계 크게 보기](../docs/assets/step-3-plan.html)
 
 사용 파일: tasks/index.md, task.md, progress.md, 관련 코드·테스트
 
@@ -168,6 +161,7 @@
 성능 테스트 필요 여부도 여기서 정합니다. 필요하면 측정 조건과 목표를 기록하고, 기존 기능 개선은 구현 전 성능을 측정해 비교 기준을 남깁니다.
 
 verifier에게 적용 영역·상세 기준·시나리오의 누락을 확인받고 결과를 plan-review.md에 남깁니다.
+verifier 호출은 Agent Hook이 상태에 기록합니다. 최초 start 명령은 plan-review.md의 판정, 두 기준 표의 데이터 행, 계획 단계의 verifier 호출 기록이 있어야 구현 단계로 넘어갑니다(wait·block을 거쳐도 같음).
 
 결과: 구현할 범위를 확정합니다. 중요한 선택은 사용자와 정하고, 계획만 요청했다면 여기서 마칩니다.
 
@@ -175,16 +169,17 @@ verifier에게 적용 영역·상세 기준·시나리오의 누락을 확인받
 
 ### 4. 구현 : 정한 범위 안에서 코드 수정
 
-<img src="assets/step-4-build.svg" alt="4단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-4-build.svg" alt="4단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-4-build.html)
+[이 단계 크게 보기](../docs/assets/step-4-build.html)
 
 사용 파일: implement-task의 SKILL.md, 작업 기록, 관련 규칙·코드·테스트
 
 클로드가 start 명령을 호출하면 프로그램이 계획의 필수 항목을 확인하고 구현 단계로 전환합니다.
 클로드는 코드를 수정하고 진행 내용을 progress.md에 남깁니다.
 
-Edit·Write 실행 직전에는 PreToolUse Hook이 동작합니다. app/, scripts/, tests/ 아래 파일은 구현 단계에서만 수정하도록 제한합니다. Bash나 직접 편집은 이 제한에 포함되지 않습니다.
+Edit·Write·NotebookEdit 실행 직전에는 PreToolUse Hook이 동작합니다. 구현 단계가 아니면 docs/, 루트 .md, 활성 작업의 task·progress·plan-review·review.md만 수정할 수 있고 나머지(앱 코드, tests/, .claude의 hooks·settings·checks·rules·agents·skills 포함)는 거부합니다. 증거·state.json·active.json·index.md는 어느 단계에서도 도구로 수정할 수 없습니다.
+Bash 실행 직전에도 Hook이 동작합니다. 증거·상태 파일을 언급하는 명령, hook 명령 직접 호출, git push·reset --hard·clean·restore·checkout --·--no-verify, rm -r 계열을 거부합니다. 검사 로그는 Read 도구로 읽고, 커밋 시 상태 파일은 디렉토리 단위(`git add .claude/tasks`)로 지정합니다. settings.json의 permissions.deny가 같은 경로·명령을 한 번 더 막습니다.
 
 결과: 변경 코드와 진행 기록을 남기고 테스트로 넘어갑니다.
 
@@ -192,9 +187,9 @@ Edit·Write 실행 직전에는 PreToolUse Hook이 동작합니다. app/, script
 
 ### 5. 테스트 : 기능 확인 후 필요한 성능 측정
 
-<img src="assets/step-5-test.svg" alt="5단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-5-test.svg" alt="5단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-5-test.html)
+[이 단계 크게 보기](../docs/assets/step-5-test.html)
 
 사용 파일: checks.json, hooks/workflow.py, 작업 폴더의 evidence/
 
@@ -211,14 +206,14 @@ Edit·Write 실행 직전에는 PreToolUse Hook이 동작합니다. app/, script
 
 ### 6. 리뷰 : 요구사항과 구현 결과 대조
 
-<img src="assets/step-6-review.svg" alt="6단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-6-review.svg" alt="6단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-6-review.html)
+[이 단계 크게 보기](../docs/assets/step-6-review.html)
 
 사용 파일: review-task의 SKILL.md, task.md, 변경 코드, 테스트 증거, 리뷰 양식
 
-메인이 review-begin으로 회차를 기록한 뒤 task.md·변경 파일·기준 ID·테스트 증거를 verifier에게 전달합니다. verifier는 읽기 전용으로 누락·결함·근거를 확인하고 결과를 반환합니다. 메인은 실제 응답과 지적별 처리 내역을 review.md에 남깁니다.
-review pass 또는 review fail 명령으로 판정을 등록하면 프로그램이 증거를 저장합니다.
+메인이 review-begin으로 회차를 기록한 뒤 task.md·변경 파일(evidence/changes.txt)·기준 ID·테스트 증거를 verifier에게 전달합니다. verifier는 읽기 전용으로 누락·결함·근거를 확인하고 결과를 반환합니다. 메인은 실제 응답과 지적별 처리 내역을 review.md에 남깁니다.
+Agent Hook이 verifier 호출을 현재 회차·snapshot과 함께 기록합니다. review pass·fail은 이 기록이 있어야 등록되며, review pass는 review.md에 "## 독립 검증 결과" 본문과 대상 snapshot 문자열도 요구합니다. review-begin 전의 결과 리뷰 호출은 거부됩니다. 기록은 호출 시도만 증명하고 응답 품질은 증명하지 않습니다.
 
 결과: 통과하면 완료 확인으로, 문제가 있으면 수정·테스트·리뷰를 반복합니다. 검증은 verifier가 맡고, 판정 등록과 완료 처리는 메인이 담당합니다.
 
@@ -233,16 +228,16 @@ review pass 또는 review fail 명령으로 판정을 등록하면 프로그램�
 
 ### 7. 완료 : 최종 확인과 결과 보고
 
-<img src="assets/step-7-complete.svg" alt="7단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
+<img src="../docs/assets/step-7-complete.svg" alt="7단계 흐름" width="700" style="width: 100%; max-width: 700px; height: auto;">
 
-[이 단계 크게 보기](assets/step-7-complete.html)
+[이 단계 크게 보기](../docs/assets/step-7-complete.html)
 
 사용 파일: 현재 상태, task.md, 테스트·리뷰 증거, progress.md
 
 클로드가 진행 기록을 정리하고 complete 명령을 호출합니다.
 프로그램은 테스트·리뷰 통과 여부와 증거가 최신 작업 내용에 맞는지 확인한 뒤 완료 상태로 바꿉니다.
 
-응답 종료 시에는 Stop Hook이 상태와 증거를 확인합니다. 미완료 개발 작업이면 한 번 종료를 막고 안내합니다. 작업이 없거나 계획·대기·막힘 상태이면 허용하며, 이미 Hook으로 이어진 응답은 다시 막지 않습니다.
+응답 종료 시에는 Stop Hook이 상태를 확인합니다. 구현·검사·리뷰 중이면 한 번 종료를 막고 안내합니다. 작업이 없거나 계획·대기·막힘·완료 상태이면 허용하며, 이미 Hook으로 이어진 응답은 다시 막지 않습니다. 완료 이후의 파일 변경은 감시하지 않습니다(다음 작업의 몫). 상태 파일이 손상되면 한 번 막고 사용자 보고를 요구하며, 다른 Hook은 손상 상태에서도 거부 기본값으로 계속 동작합니다.
 
 결과: 완료 처리 후 결과·실행한 테스트·남은 한계를 보고합니다. 응답이 끝났다는 사실만으로 작업이 완료되지는 않습니다.
 
