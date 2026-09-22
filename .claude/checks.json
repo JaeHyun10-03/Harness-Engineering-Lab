@@ -1,3 +1,5 @@
 {
-  "checks": []
+  "checks": [
+    {"argv": ["python3", "-m", "unittest", "discover", "-s", "tests", "-v"], "timeout_seconds": 300}
+  ]
 }

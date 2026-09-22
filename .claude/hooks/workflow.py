@@ -16,6 +16,14 @@ TASKS = ROOT / '.claude/tasks'
 STATE = TASKS / 'active.json'
 EXCLUDED = {'.git', 'node_modules', '__pycache__', '.venv', 'venv',
             '.next', 'dist', 'build', 'coverage', '.pytest_cache'}
+# Program-owned records: never editable by tools, in any phase.
+PROTECTED = re.compile(r'^\.claude/tasks/(active\.json|index\.md|[^/]+/(state\.json|evidence(/.*)?))$')
+# Outside the implementing phase only planning documents may change.
+PLANNING_DOCS = ('task', 'progress', 'plan-review', 'review')
+BASH_DENY = re.compile(
+    r'active\.json|state\.json|/evidence\b|workflow\.py["\']?\s+["\']?hook-'
+    r'|git\s+push|reset\s+--hard|git\s+clean|git\s+restore\b|git\s+checkout\s+--|--no-verify'
+    r'|\brm\b.*(\s-[a-zA-Z]*[rR]|--recursive)')
 
 
 def read_json(path):
@@ -57,6 +65,42 @@ def save(state):
         item = read_json(path)
         rows.append('- [{}]({}/task.md): {}'.format(item['id'], item['id'], item['phase']))
     (TASKS / 'index.md').write_text('\n'.join(rows) + '\n', encoding='utf-8')
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def git(*args):
+    try:
+        result = subprocess.run(['git', *args], cwd=ROOT, capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return result.stdout if result.returncode == 0 else None
+
+
+def table_rows(body, heading):
+    match = re.search(r'^## ' + heading + r'\n(.*?)(?=^## |\Z)', body, re.M | re.S)
+    if not match:
+        return []
+    return [line for line in match.group(1).splitlines()
+            if line.startswith('|') and not re.match(r'\|\s*-', line)]
+
+
+def edit_decision(state, rel, corrupt):
+    """Return a deny reason, or None when the edit is allowed."""
+    if PROTECTED.search(rel):
+        return '증거·상태·작업 목록은 workflow.py만 기록합니다.'
+    if state and state['phase'] == 'implementing':
+        return None
+    if rel.startswith('docs/') or ('/' not in rel and rel.endswith('.md')):
+        return None
+    if state and re.fullmatch(r'\.claude/tasks/' + re.escape(state['id']) + r'/(' + '|'.join(PLANNING_DOCS) + r')\.md', rel):
+        return None
+    reason = '구현 단계에서만 수정할 수 있습니다. 작업을 계획하고 workflow.py start를 실행하세요.'
+    if corrupt:
+        reason = '상태 파일 손상({}). 사용자에게 보고하세요. '.format(corrupt) + reason
+    return reason
 
 
 def snapshot(state):
@@ -140,9 +184,16 @@ def verify(state):
     save(state)
     evidence = task_dir(state) / 'evidence'
     evidence.mkdir(exist_ok=True)
+    started = now()
+    head, porcelain = git('rev-parse', 'HEAD'), git('status', '--porcelain')
+    (evidence / 'changes.txt').write_text(
+        'git 저장소가 아니거나 git을 실행할 수 없습니다.\n' if porcelain is None
+        else '# git status --porcelain\n' + porcelain + '\n# git diff --stat\n' + (git('diff', '--stat') or ''),
+        encoding='utf-8')
     results = []
     for i, check in enumerate(checks):
         log = evidence / ('check-{}.log'.format(i + 1))
+        check_started = datetime.now(timezone.utc)
         with log.open('w', encoding='utf-8') as output:
             try:
                 # No shell interpolation; commands are explicitly configured argument arrays.
@@ -160,11 +211,16 @@ def verify(state):
                 output.write(str(error) + '\n')
                 code = 127
         results.append({'argv': check['argv'], 'exit_code': code, 'log': log.name,
-                        'log_hash': hashlib.sha256(log.read_bytes()).hexdigest()})
+                        'log_hash': hashlib.sha256(log.read_bytes()).hexdigest(),
+                        'duration_seconds': round((datetime.now(timezone.utc) - check_started).total_seconds(), 3)})
     after = snapshot(state)
     passed = all(x['exit_code'] == 0 for x in results) and before == after
-    write_json(evidence / 'checks.json', {'passed': passed, 'snapshot': after,
-               'unchanged_during_checks': before == after, 'results': results})
+    write_json(evidence / 'checks.json', {
+        'passed': passed, 'snapshot': after, 'unchanged_during_checks': before == after,
+        'started_at': started, 'finished_at': now(), 'python': sys.version.split()[0],
+        # dirty is informational: verify itself writes state before this runs.
+        'git': {'head': head.strip() if head else None, 'dirty': None if porcelain is None else bool(porcelain.strip())},
+        'results': results})
     state['phase'] = 'reviewing' if passed else 'implementing'
     save(state)
     if not passed:
@@ -174,15 +230,27 @@ def verify(state):
 
 def hook(event):
     payload = json.load(sys.stdin)
-    state = current()
+    tool_input = payload.get('tool_input') or {}
+    if event == 'bash':
+        # Stateless on purpose: must keep working when the state file is corrupt.
+        if BASH_DENY.search(tool_input.get('command', '')):
+            deny('PreToolUse', '증거·상태 파일 접근, hook 직접 호출, 파괴적 git·삭제 명령은 허용하지 않습니다. 로그는 Read 도구로 읽으세요.')
+        return
+    corrupt = None
+    try:
+        state = current()
+    except (ValueError, KeyError, TypeError) as error:
+        state, corrupt = None, str(error)
     if event == 'session':
         message = '작업 안내: .claude/CLAUDE.md. 개발 요청은 .claude/tasks/index.md부터 확인하세요.'
-        if state:
+        if corrupt:
+            message += ' 경고: 작업 상태 파일 손상({}). 사용자에게 보고하세요.'.format(corrupt)
+        elif state:
             message += ' 현재 작업: {} / {}. task.md, progress.md와 실제 코드를 대조하세요.'.format(state['id'], state['phase'])
         print(json.dumps({'hookSpecificOutput': {'hookEventName': 'SessionStart',
                                                 'additionalContext': message}}, ensure_ascii=False))
     elif event == 'edit':
-        raw = payload.get('tool_input', {}).get('file_path', '')
+        raw = tool_input.get('file_path') or tool_input.get('notebook_path') or ''
         if not raw:
             return
         path = Path(raw)
@@ -192,30 +260,49 @@ def hook(event):
             rel = path.resolve().relative_to(ROOT).as_posix()
         except ValueError:
             return
-        if rel.split('/')[0] in {'app', 'scripts', 'tests'} and (not state or state['phase'] != 'implementing'):
-            print(json.dumps({'hookSpecificOutput': {'hookEventName': 'PreToolUse',
-                 'permissionDecision': 'deny', 'permissionDecisionReason':
-                 '앱·실행 스크립트·테스트 수정 전 작업을 계획하고 workflow.py start를 실행하세요.'}}, ensure_ascii=False))
-    elif event == 'stop':
-        if not state or state['phase'] in {'planning', 'waiting', 'blocked'}:
+        reason = edit_decision(state, rel, corrupt)
+        if reason:
+            deny('PreToolUse', reason)
+    elif event == 'agent':
+        if tool_input.get('subagent_type') != 'verifier' or not state:
             return
-        try:
-            if state['phase'] != 'done':
-                raise ValueError('개발 작업이 아직 완료되지 않았습니다: ' + state['phase'])
-            complete_evidence(state)
-        except (ValueError, OSError, KeyError) as error:
-            # One reminder per stop loop; never trap questions or unresolved environments.
-            if payload.get('stop_hook_active'):
-                print('완료 검사를 충족하지 못했습니다. 미완료 상태를 사용자에게 알리세요.', file=sys.stderr)
-                return
-            print(json.dumps({'decision': 'block', 'reason': str(error) +
-                 ' 검사를 마친 뒤 complete를 실행하세요. 질문·선택 대기·중단이면 이유를 남겨 wait 또는 block을 실행하고 미완료임을 보고하세요.'}, ensure_ascii=False))
+        if state['phase'] == 'reviewing' and not state.get('review_pending'):
+            deny('PreToolUse', '결과 리뷰는 review-begin을 먼저 실행한 뒤 verifier를 호출하세요.')
+            return
+        # Records the attempt only; the program cannot judge the verifier's answer.
+        state.setdefault('verifier_calls', []).append({
+            'at': now(), 'phase': state['phase'], 'stage': 'result' if state.get('started') else 'plan',
+            'attempt': state.get('review_attempts', 0), 'snapshot': state.get('review_pending')})
+        save(state)
+    elif event == 'stop':
+        if corrupt:
+            if not payload.get('stop_hook_active'):
+                block('작업 상태 파일 손상: {}. 사용자에게 보고하세요.'.format(corrupt))
+            return
+        # done was fully validated by complete; later edits belong to the next task.
+        if not state or state['phase'] in {'planning', 'waiting', 'blocked', 'done'}:
+            return
+        if payload.get('stop_hook_active'):
+            print('완료 검사를 충족하지 못했습니다. 미완료 상태를 사용자에게 알리세요.', file=sys.stderr)
+            return
+        block('개발 작업이 아직 완료되지 않았습니다: {}. 검사를 마친 뒤 complete를 실행하세요. '
+              '질문·선택 대기·중단이면 이유를 남겨 wait 또는 block을 실행하고 미완료임을 보고하세요.'.format(state['phase']))
+
+
+def deny(event_name, reason):
+    print(json.dumps({'hookSpecificOutput': {'hookEventName': event_name, 'permissionDecision': 'deny',
+                      'permissionDecisionReason': reason}}, ensure_ascii=False))
+
+
+def block(reason):
+    print(json.dumps({'decision': 'block', 'reason': reason}, ensure_ascii=False))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=['new', 'status', 'start', 'verify', 'review',
-                        'complete', 'wait', 'block', 'review-begin', 'review-extend', 'hook-session', 'hook-edit', 'hook-stop'])
+                        'complete', 'wait', 'block', 'review-begin', 'review-extend',
+                        'hook-session', 'hook-edit', 'hook-bash', 'hook-agent', 'hook-stop'])
     parser.add_argument('value', nargs='?')
     args = parser.parse_args()
     if args.command.startswith('hook-'):
@@ -250,6 +337,17 @@ def main():
             match = re.search(r'^## ' + heading + r'\n(.*?)(?=^## |\Z)', body, re.M | re.S)
             if not match or not match.group(1).strip():
                 raise ValueError('task.md의 {} 항목을 작성하세요.'.format(heading))
+        for heading in ('적용 영역과 상세 기준', '일반 테스트 방법'):
+            if len(table_rows(body, heading)) < 2:
+                raise ValueError('task.md의 {} 표에 데이터 행을 작성하세요.'.format(heading))
+        # The plan gate applies to the first start only, whatever detour (wait/block) preceded it.
+        if not state.get('started'):
+            review = directory / 'plan-review.md'
+            if not review.exists() or '판정' not in review.read_text(encoding='utf-8'):
+                raise ValueError('plan-review.md에 verifier의 계획 검증 판정을 남기세요.')
+            if not any(call.get('stage') == 'plan' for call in state.get('verifier_calls', [])):
+                raise ValueError('계획 단계의 verifier 호출 기록이 없습니다.')
+        state['started'] = True
         state['phase'] = 'implementing'
         state.pop('reason', None)
         save(state)
@@ -283,9 +381,17 @@ def main():
             raise ValueError('review pass 또는 review fail을 지정하세요.')
         if state.get('review_pending') != receipt['snapshot']:
             raise ValueError('최신 검사 후 review-begin으로 리뷰를 시작하세요.')
+        if not any(call.get('attempt') == state['review_attempts'] and call.get('snapshot') == receipt['snapshot']
+                   for call in state.get('verifier_calls', [])):
+            raise ValueError('현재 회차의 verifier 호출 기록이 없습니다. review-begin 후 verifier를 호출하세요.')
         report = (directory / 'review.md').read_bytes()
+        text = report.decode('utf-8')
         if not report.strip():
             raise ValueError('검토 근거를 review.md에 작성하세요.')
+        if args.value == 'pass':
+            section = re.search(r'^## 독립 검증 결과\n(.*?)(?=^## |\Z)', text, re.M | re.S)
+            if not section or not section.group(1).strip() or receipt['snapshot'] not in text:
+                raise ValueError('review.md에 "## 독립 검증 결과"와 대상 snapshot {}을 기록하세요.'.format(receipt['snapshot'][:12]))
         write_json(directory / 'evidence/review.json', {'verdict': args.value,
                    'snapshot': receipt['snapshot'], 'report_hash': hashlib.sha256(report).hexdigest()})
         attempt = state['review_attempts']

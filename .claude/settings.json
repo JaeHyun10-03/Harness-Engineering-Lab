@@ -1,7 +1,31 @@
 {
+  "permissions": {
+    "deny": [
+      "Edit(/.claude/tasks/active.json)",
+      "Edit(/.claude/tasks/index.md)",
+      "Edit(/.claude/tasks/**/state.json)",
+      "Edit(/.claude/tasks/**/evidence/**)",
+      "Write(/.claude/tasks/active.json)",
+      "Write(/.claude/tasks/index.md)",
+      "Write(/.claude/tasks/**/state.json)",
+      "Write(/.claude/tasks/**/evidence/**)",
+      "Bash(git push:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout --:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Bash(rm -r:*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [{"hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-session", "timeout": 10}]}],
-    "PreToolUse": [{"matcher": "Edit|Write", "hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-edit", "timeout": 10}]}],
+    "PreToolUse": [
+      {"matcher": "Edit|Write|NotebookEdit", "hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-edit", "timeout": 10}]},
+      {"matcher": "Bash", "hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-bash", "timeout": 10}]},
+      {"matcher": "Agent|Task", "hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-agent", "timeout": 10}]}
+    ],
     "Stop": [{"hooks": [{"type": "command", "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/workflow.py\" hook-stop", "timeout": 30}]}]
   }
 }
