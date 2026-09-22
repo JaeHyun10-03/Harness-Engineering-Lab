@@ -21,8 +21,8 @@ Claude Code용 기본 지침, 계획·구현·검토 스킬, 단계 기록과 �
 - `.claude/rules/`: 공통 규칙
 - `.claude/skills/`: 계획·구현·검토 절차와 양식
 - `.claude/hooks/workflow.py`: 단계 관리, 검사 실행, Hook 처리
-- `.claude/settings.json`: Hook 연결 (기존 사용자 권한을 확대하지 않음)
-- `.claude/checks.json`: 앱의 필수 검사 명령. 현재 빈 목록이며 검사 통과 불가
+- `.claude/settings.json`: Hook 연결과 거부 권한 (허용 권한은 확대하지 않음)
+- `.claude/checks.json`: 필수 검사 명령. 현재는 하네스 테스트만 등록. 앱 선택 후 앱 검사 추가
 - `.claude/tasks/`: 실제 작업 기록
 - `tests/`: 작업 흐름의 동작 검사
 - `docs/decisions.md`: 결정 기록
