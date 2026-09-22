@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>5. 테스트</title><style>body{margin:0;background:#f1f3f1;color:#34483e;font:17px system-ui}header{padding:18px 28px;background:white;border-bottom:1px solid #dce3dd}nav{display:flex;gap:20px}a{color:#456554}h1{font-size:24px;font-weight:400}main{max-width:1350px;margin:24px auto;padding:0 18px}.hint{line-height:1.7;margin:18px 0}.chart{background:white;padding:16px;overflow:auto}svg{display:block;max-width:100%;height:auto;margin:auto}section{margin:35px 0}img{width:100%;height:auto}button{font:inherit;background:white;border:1px solid #bccbc0;border-radius:5px;padding:6px 12px;cursor:pointer}.full svg{max-width:none}</style><header><nav><a href="index.html">모든 순서도</a><a href="workflow.html">전체 흐름</a><button onclick="document.querySelectorAll('.chart').forEach(x=>x.classList.toggle('full'))">원본 크기 / 화면 맞춤</button></nav></header><main><h1>5. 테스트</h1><p class="hint">마름모: 조건 판단 · 사각형: 처리 · 둥근 모양: 시작·종료·대기<br>일반→성능 순서는 등록한 통합 명령의 책임입니다. verify는 checks 배열을 자동 조기 중단하지 않습니다. 테스트 수정 반복 자체에는 별도 횟수 제한이 없습니다.</p><div class="chart"><svg role="img" aria-label="5. 테스트" xmlns="http://www.w3.org/2000/svg" width="945.2199999999999" height="1773.74" viewBox="0 0 945.2199999999999 1773.74">
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>5. 테스트</title><style>body{margin:0;background:#f1f3f1;color:#34483e;font:17px system-ui}header{padding:18px 28px;background:white;border-bottom:1px solid #dce3dd}nav{display:flex;gap:20px}a{color:#456554}h1{font-size:24px;font-weight:400}main{max-width:1350px;margin:24px auto;padding:0 18px}.hint{line-height:1.7;margin:18px 0}.chart{background:white;padding:16px;overflow:auto}svg{display:block;max-width:100%;height:auto;margin:auto}section{margin:35px 0}img{width:100%;height:auto}button{font:inherit;background:white;border:1px solid #bccbc0;border-radius:5px;padding:6px 12px;cursor:pointer}.full svg{max-width:none}</style><header><nav><a href="index.html">모든 순서도</a><a href="workflow.html">전체 흐름</a><button onclick="document.querySelectorAll('.chart').forEach(x=>x.classList.toggle('full'))">원본 크기 / 화면 맞춤</button></nav></header><main><h1>5. 테스트</h1><p class="hint">마름모: 조건 판단 · 사각형: 처리 · 둥근 모양: 시작·종료·대기<br>checks.json의 명령을 순서대로 실행합니다. 첫 실패·시간 초과에 멈추고 이후 검사는 미실행으로 기록합니다. 실행별 증거를 보존합니다.</p><div class="chart"><svg role="img" aria-label="5. 테스트" xmlns="http://www.w3.org/2000/svg" width="945.2199999999999" height="1773.74" viewBox="0 0 945.2199999999999 1773.74">
 <rect x="0" y="0" width="945.2199999999999" height="1773.74" fill="#ffffff" aria-hidden="true" /><g id="graph0" class="graph" transform="translate(-71.85 1743.74)">
 <title>G</title>
 <g id="edge1" class="edge">
@@ -116,7 +116,7 @@
 <g id="node9" class="node">
 <title>perf</title>
 <path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M407.91,-834.96C407.91,-834.96 200.19,-834.96 200.19,-834.96 194.19,-834.96 188.19,-828.96 188.19,-822.96 188.19,-822.96 188.19,-803.76 188.19,-803.76 188.19,-797.76 194.19,-791.76 200.19,-791.76 200.19,-791.76 407.91,-791.76 407.91,-791.76 413.91,-791.76 419.91,-797.76 419.91,-803.76 419.91,-803.76 419.91,-822.96 419.91,-822.96 419.91,-828.96 413.91,-834.96 407.91,-834.96" />
-<text xml:space="preserve" text-anchor="middle" x="304.05" y="-807.96" font-family="Arial" font-size="18.00">통합 명령이 성능 테스트 실행</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-807.96" font-family="Arial" font-size="18.00">후속 성능 테스트 실행</text>
 </g>
 
 <g id="node10" class="node">
@@ -128,7 +128,7 @@
 <g id="node11" class="node">
 <title>record</title>
 <path fill="#f1f6f3" stroke="#a9beb5" stroke-width="1.3" d="M397.91,-592.64C397.91,-592.64 210.2,-592.64 210.2,-592.64 204.2,-592.64 198.2,-586.64 198.2,-580.64 198.2,-580.64 198.2,-561.44 198.2,-561.44 198.2,-555.44 204.2,-549.44 210.2,-549.44 210.2,-549.44 397.91,-549.44 397.91,-549.44 403.91,-549.44 409.91,-555.44 409.91,-561.44 409.91,-561.44 409.91,-580.64 409.91,-580.64 409.91,-586.64 403.91,-592.64 397.91,-592.64" />
-<text xml:space="preserve" text-anchor="middle" x="304.05" y="-565.64" font-family="Arial" font-size="18.00">종료 코드·로그·결과 저장</text>
+<text xml:space="preserve" text-anchor="middle" x="304.05" y="-565.64" font-family="Arial" font-size="18.00">실행별 결과·로그 보존</text>
 </g>
 
 <g id="node12" class="node">

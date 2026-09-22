@@ -10,6 +10,7 @@
 - 기존 설정과 합치기 : 기존 지침·권한·Hook과 충돌하거나 중복되지 않게 정리합니다.
 - 필요한 자료 옮기기 : .claude와 연결된 문서·하네스 테스트를 함께 옮기고 경로를 맞춥니다.
 - 프로젝트 설명 바꾸기 : 실험용 설명을 실제 프로젝트의 기술·구조·실행 방법으로 바꿉니다.
+- 프로젝트 운영 규칙 연결하기 : 공통 상태·증거·완료 게이트는 유지하고 도메인 정책, 코드·테스트 규칙, 이슈·PR 절차, 성능·마이그레이션 보호 규칙을 프로젝트에 맞게 붙입니다. 이슈는 목표와 이유, 하네스 작업은 진행·검증 기록, PR은 변경·팀 리뷰의 원본으로 둡니다.
 - 실행 환경 준비하기 : Claude Code·Python 3.9 이상과 필요한 테스트 도구를 준비합니다.
 - 코드 경로 맞추기 : 수정 제한 경로와 변경 감지 범위를 실제 소스 구조에 맞춥니다.
 - 테스트 명령 연결하기 : checks.json에 실제 명령을 등록하고 실패가 정상적으로 감지되는지 확인합니다.
@@ -39,16 +40,20 @@
 │   ├── index.md                      # 작업 목록
 │   ├── active.json                   # 현재 상태 — 작업 생성 시 생성
 │   └── <id>/                         # 개별 작업 — 작업 생성 시 생성
-│       ├── task.md                   # 목표·범위·완료 기준
+│       ├── task.md                   # 구체화 기록·요구사항 ID·완료 기준
 │       ├── progress.md               # 진행 상황·다음 행동
 │       ├── state.json                # 프로그램이 관리하는 상태
 │       ├── plan-review.md            # 계획 검증 결과
 │       ├── review.md                 # 리뷰할 때 작성하는 보고서
 │       └── evidence/                 # 테스트·리뷰 시 생성하는 증거
-│           ├── checks.json           # 테스트 결과·코드 지문
-│           ├── check-*.log           # 테스트 실행 로그
-│           ├── changes.txt           # 검사 시점의 git 변경 목록
-│           ├── review.json           # 리뷰 판정·보고서 지문
+│           ├── checks.json           # 최신 실행 결과 사본
+│           ├── changes.txt          # 최신 변경 목록 사본
+│           ├── verify-NNN/          # 실행별 보존 기록
+│           │   ├── checks.json       # 결과·코드 지문·미실행 검사
+│           │   ├── check-*.log       # 실행 로그
+│           │   └── changes.txt      # 작업 시작 커밋 기준 변경 목록
+│           ├── review.json           # 최신 리뷰 판정 사본
+│           ├── review-N.json         # 회차별 판정·대상 검사
 │           └── review-N.md           # 회차별 리뷰 보고서
 │
 ├── skills/                           # 요청에 맞춰 읽는 작업 절차
@@ -74,6 +79,7 @@
 │   └── workflow.py                   # 상태 전환·자동 테스트 프로그램
 │
 ├── checks.json                       # 실행할 필수 테스트 명령
+├── snapshot.json                     # Git이 무시하는 검사 입력 파일
 │
 └── README.md
 
@@ -156,12 +162,13 @@ docs/assets/                          # 설명서용 시각화 (build_diagrams.p
 사용 파일: tasks/index.md, task.md, progress.md, 관련 코드·테스트
 
 새 작업은 plan-task에 따라 자료를 확인하고 new 명령으로 생성합니다.
-목표·범위·완료 기준은 task.md에, 다음 행동은 progress.md에 작성합니다.
+모호한 요청은 기존 코드·문서로 알 수 있는 사실과 사용자 선택이 필요한 사항을 나눕니다. 중요한 질문을 1~3개씩 묻고 답변을 task.md의 질문·결정 기록에 반영합니다. 답변 뒤 새 모호함이 생기면 다시 질문합니다. 질문이 없다면 조사 근거와 이유를 기록합니다.
+task.md에는 원문 요청과 `REQ-번호`별 조건·기대 동작, 목표·범위·완료 기준을 기록합니다. 미결정 질문이 없고 요구사항을 테스트할 수 있을 때 명세 상태를 확정합니다. 다음 행동은 progress.md에 작성합니다.
 기존 작업은 status 명령으로 상태를 확인하고 기록과 실제 코드를 대조합니다.
 성능 테스트 필요 여부도 여기서 정합니다. 필요하면 측정 조건과 목표를 기록하고, 기존 기능 개선은 구현 전 성능을 측정해 비교 기준을 남깁니다.
 
 verifier에게 적용 영역·상세 기준·시나리오의 누락을 확인받고 결과를 plan-review.md에 남깁니다.
-verifier 호출은 Agent Hook이 상태에 기록합니다. 최초 start 명령은 plan-review.md의 판정, 두 기준 표의 데이터 행, 계획 단계의 verifier 호출 기록이 있어야 구현 단계로 넘어갑니다(wait·block을 거쳐도 같음).
+verifier 호출은 Agent Hook이 계획 지문과 함께 상태에 기록합니다. 새 작업의 start는 확정 명세, 미결정 질문 없음, 요구사항 ID, 현재 계획 지문에 대한 호출과 plan-review.md의 `최종 판정: 통과 권고`, 두 기준 표의 데이터 행이 있어야 구현 단계로 넘어갑니다(wait·block을 거쳐도 같음). 구현 중 명세나 테스트 기준이 바뀌면 계획 검증과 start를 다시 거쳐야 Edit·Write·NotebookEdit을 통한 코드 편집과 verify를 진행할 수 있습니다.
 
 결과: 구현할 범위를 확정합니다. 중요한 선택은 사용자와 정하고, 계획만 요청했다면 여기서 마칩니다.
 
@@ -178,7 +185,7 @@ verifier 호출은 Agent Hook이 상태에 기록합니다. 최초 start 명령�
 클로드가 start 명령을 호출하면 프로그램이 계획의 필수 항목을 확인하고 구현 단계로 전환합니다.
 클로드는 코드를 수정하고 진행 내용을 progress.md에 남깁니다.
 
-Edit·Write·NotebookEdit 실행 직전에는 PreToolUse Hook이 동작합니다. 구현 단계가 아니면 docs/, 루트 .md, 활성 작업의 task·progress·plan-review·review.md만 수정할 수 있고 나머지(앱 코드, tests/, .claude의 hooks·settings·checks·rules·agents·skills 포함)는 거부합니다. 증거·state.json·active.json·index.md는 어느 단계에서도 도구로 수정할 수 없습니다.
+Edit·Write·NotebookEdit 실행 직전에는 PreToolUse Hook이 동작합니다. 구현 단계가 아니면 docs/, 루트 .md, 활성 작업의 task·progress·plan-review·review.md만 수정할 수 있고 나머지(앱 코드, tests/, .claude의 hooks·settings·checks·rules·agents·skills 포함)는 거부합니다. 증거·state.json·active.json·index.md는 어느 단계에서도 도구로 수정할 수 없습니다. settings.json의 Edit 경로 거부는 Claude Code의 Write에도 적용됩니다.
 Bash 실행 직전에도 Hook이 동작합니다. 증거·상태 파일을 언급하는 명령, hook 명령 직접 호출, git push·reset --hard·clean·restore·checkout --·--no-verify, rm -r 계열을 거부합니다. 검사 로그는 Read 도구로 읽고, 커밋 시 상태 파일은 디렉토리 단위(`git add .claude/tasks`)로 지정합니다. settings.json의 permissions.deny가 같은 경로·명령을 한 번 더 막습니다.
 
 결과: 변경 코드와 진행 기록을 남기고 테스트로 넘어갑니다.
@@ -193,10 +200,10 @@ Bash 실행 직전에도 Hook이 동작합니다. 증거·상태 파일을 언�
 
 사용 파일: checks.json, hooks/workflow.py, 작업 폴더의 evidence/
 
-클로드가 verify 명령을 호출하면 프로그램이 checks.json에 등록된 테스트를 실행합니다.
-일반 테스트 통과 후, 계획에서 필요하다고 정한 작업만 성능 테스트를 실행합니다.
+클로드가 verify 명령을 호출하면 프로그램이 checks.json에 등록된 테스트를 순서대로 실행합니다. 첫 실패나 시간 초과에는 멈추고 이후 검사를 미실행으로 기록합니다.
+일반 테스트 뒤에 계획에서 필요하다고 정한 성능 테스트를 별도 명령으로 등록합니다.
 응답 시간·처리량·오류율·자원 사용량 중 필요한 지표를 정한 조건에서 측정하고 목표 및 변경 전 결과와 비교합니다.
-로그와 실행 결과, 이후 파일 변경을 확인할 값을 evidence/에 저장합니다.
+로그와 실행 결과, 이후 파일 변경을 확인할 값을 evidence/verify-NNN/에 실행별로 보존합니다. 최신 실행은 evidence/checks.json에서 확인합니다.
 
 결과: 통과하면 리뷰로, 실패하면 구현으로 돌아갑니다.
 
@@ -212,7 +219,7 @@ Bash 실행 직전에도 Hook이 동작합니다. 증거·상태 파일을 언�
 
 사용 파일: review-task의 SKILL.md, task.md, 변경 코드, 테스트 증거, 리뷰 양식
 
-메인이 review-begin으로 회차를 기록한 뒤 task.md·변경 파일(evidence/changes.txt)·기준 ID·테스트 증거를 verifier에게 전달합니다. verifier는 읽기 전용으로 누락·결함·근거를 확인하고 결과를 반환합니다. 메인은 실제 응답과 지적별 처리 내역을 review.md에 남깁니다.
+메인이 review-begin으로 회차를 기록한 뒤 task.md·작업 시작 커밋부터의 변경 파일(evidence/changes.txt)·기준 ID·테스트 증거를 verifier에게 전달합니다. verifier는 읽기 전용으로 누락·결함·근거를 확인하고 결과를 반환합니다. 메인은 실제 응답과 지적별 처리 내역을 review.md에 남기고, 각 `REQ-번호`를 구현 위치·테스트·실행 증거에 연결합니다.
 Agent Hook이 verifier 호출을 현재 회차·snapshot과 함께 기록합니다. review pass·fail은 이 기록이 있어야 등록되며, review pass는 review.md에 "## 독립 검증 결과" 본문과 대상 snapshot 문자열도 요구합니다. review-begin 전의 결과 리뷰 호출은 거부됩니다. 기록은 호출 시도만 증명하고 응답 품질은 증명하지 않습니다.
 
 결과: 통과하면 완료 확인으로, 문제가 있으면 수정·테스트·리뷰를 반복합니다. 검증은 verifier가 맡고, 판정 등록과 완료 처리는 메인이 담당합니다.

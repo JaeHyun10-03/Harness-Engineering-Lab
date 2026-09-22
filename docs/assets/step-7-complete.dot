@@ -9,7 +9,7 @@ reject [label="완료 거부 → 재진행\n한도 도달 시 결정 대기", sh
 done [label="done 기록 → 결과·한계 보고", group=main];
 stop [label="응답 종료 시 Stop Hook", group=main];
 exempt [label="작업 없음 /\n계획·대기·막힘?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
-check [label="done +\n최신 증거 유효?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
+check [label="done 상태인가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
 loop [label="Stop Hook으로\n이어진 응답인가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09"];
 allow [label="응답 종료 허용\n기존 작업 상태 유지", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc", group=main];
 warn [label="미완료 안내 후 종료\ndone 변경 없음", shape=oval, fillcolor="#eaf1f7", color="#a9bdcc"];

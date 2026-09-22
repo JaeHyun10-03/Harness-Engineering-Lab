@@ -10,9 +10,9 @@ setup [label="설정·환경 복구 / block\n준비 후 다시 시작", shape=ov
 before [label="verify → 테스트 전 코드 식별\n일반 테스트 실행", group=main];
 normal [label="일반 테스트 통과?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
 need [label="성능 테스트가 필요한가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
-perf [label="통합 명령이 성능 테스트 실행", group=main];
+perf [label="후속 성능 테스트 실행", group=main];
 target [label="성능 목표 충족?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
-record [label="종료 코드·로그·결과 저장", group=main];
+record [label="실행별 결과·로그 보존", group=main];
 stable [label="코드 변경 없음 +\n필수 명령 모두 성공?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09", group=main];
 fail [label="실패 기록 → implementing\n환경 문제는 block"];
 can [label="지금 수정·복구 가능한가?", shape=diamond, style=filled, fillcolor="#f9f5e9", color="#c4b894", margin="0.14,0.09"];

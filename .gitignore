@@ -12,3 +12,4 @@ coverage/
 !.env.example
 .claude/settings.local.json
 .claude/tasks/*/evidence/*.log
+.claude/tasks/*/evidence/verify-*/check-*.log
