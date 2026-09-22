@@ -1,0 +1,21 @@
+{
+  "id": "001-harness-hardening",
+  "phase": "done",
+  "updated_at": "2026-09-22T06:13:06.359355+00:00",
+  "review_attempts": 2,
+  "verifier_calls": [
+    {
+      "at": "2026-09-22T05:56:51.713719+00:00",
+      "phase": "reviewing",
+      "attempt": 1,
+      "snapshot": "2b887dbc8589aeacb4bdab5a48b8457b9eff6809713273745a2459993904ee32"
+    },
+    {
+      "at": "2026-09-22T06:09:34.172990+00:00",
+      "phase": "reviewing",
+      "stage": "plan",
+      "attempt": 2,
+      "snapshot": "e45f51a53034a43bea36d975547a600604875d6512e8af6b0e044e7041696d15"
+    }
+  ]
+}

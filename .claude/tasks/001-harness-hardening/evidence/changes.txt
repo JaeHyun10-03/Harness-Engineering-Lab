@@ -1,0 +1,64 @@
+# git status --porcelain
+ M .claude/README.md
+ M .claude/agents/verifier.md
+ M .claude/checks.json
+ M .claude/hooks/workflow.py
+ M .claude/rules/verification.md
+ M .claude/settings.json
+ M .claude/skills/implement-task/SKILL.md
+ M .claude/skills/implement-task/references/recovery.md
+ M .claude/skills/plan-task/SKILL.md
+ M .claude/skills/review-task/SKILL.md
+ M .claude/tasks/index.md
+ M README.md
+R  .claude/assets/build_diagrams.py -> docs/assets/build_diagrams.py
+R  .claude/assets/index.html -> docs/assets/index.html
+R  .claude/assets/orthogonal_routes.py -> docs/assets/orthogonal_routes.py
+R  .claude/assets/step-1-start.dot -> docs/assets/step-1-start.dot
+R  .claude/assets/step-1-start.html -> docs/assets/step-1-start.html
+R  .claude/assets/step-1-start.svg -> docs/assets/step-1-start.svg
+R  .claude/assets/step-2-route.dot -> docs/assets/step-2-route.dot
+R  .claude/assets/step-2-route.html -> docs/assets/step-2-route.html
+R  .claude/assets/step-2-route.svg -> docs/assets/step-2-route.svg
+R  .claude/assets/step-3-plan.dot -> docs/assets/step-3-plan.dot
+R  .claude/assets/step-3-plan.html -> docs/assets/step-3-plan.html
+R  .claude/assets/step-3-plan.svg -> docs/assets/step-3-plan.svg
+R  .claude/assets/step-4-build.dot -> docs/assets/step-4-build.dot
+R  .claude/assets/step-4-build.html -> docs/assets/step-4-build.html
+R  .claude/assets/step-4-build.svg -> docs/assets/step-4-build.svg
+R  .claude/assets/step-5-test.dot -> docs/assets/step-5-test.dot
+R  .claude/assets/step-5-test.html -> docs/assets/step-5-test.html
+R  .claude/assets/step-5-test.svg -> docs/assets/step-5-test.svg
+R  .claude/assets/step-6-review.dot -> docs/assets/step-6-review.dot
+R  .claude/assets/step-6-review.html -> docs/assets/step-6-review.html
+R  .claude/assets/step-6-review.svg -> docs/assets/step-6-review.svg
+R  .claude/assets/step-7-complete.dot -> docs/assets/step-7-complete.dot
+R  .claude/assets/step-7-complete.html -> docs/assets/step-7-complete.html
+R  .claude/assets/step-7-complete.svg -> docs/assets/step-7-complete.svg
+R  .claude/assets/workflow.dot -> docs/assets/workflow.dot
+R  .claude/assets/workflow.html -> docs/assets/workflow.html
+R  .claude/assets/workflow.svg -> docs/assets/workflow.svg
+ M docs/decisions.md
+ M docs/getting-started.md
+ M tests/test_workflow.py
+?? .claude/tasks/001-harness-hardening/
+?? .claude/tasks/active.json
+?? docs/experiments/001-harness-hardening.md
+
+# git diff --stat
+ .claude/README.md                                  |  59 +++---
+ .claude/agents/verifier.md                         |   2 +-
+ .claude/checks.json                                |   4 +-
+ .claude/hooks/workflow.py                          | 152 ++++++++++++---
+ .claude/rules/verification.md                      |  11 +-
+ .claude/settings.json                              |  26 ++-
+ .claude/skills/implement-task/SKILL.md             |   4 +-
+ .../skills/implement-task/references/recovery.md   |   3 +-
+ .claude/skills/plan-task/SKILL.md                  |   3 +-
+ .claude/skills/review-task/SKILL.md                |   4 +-
+ .claude/tasks/index.md                             |   5 +-
+ README.md                                          |   4 +-
+ docs/decisions.md                                  |   9 +
+ docs/getting-started.md                            |  25 ++-
+ tests/test_workflow.py                             | 207 ++++++++++++++++++---
+ 15 files changed, 410 insertions(+), 108 deletions(-)

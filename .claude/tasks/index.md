@@ -1,4 +1,5 @@
 # 작업 목록
 
-등록된 작업이 없습니다. 단순 질문에는 작업을 만들지 않습니다.
-개발 요청이 시작되면 workflow.py new 명령으로 생성합니다.
+상태는 workflow.py 명령으로 갱신합니다.
+
+- [001-harness-hardening](001-harness-hardening/task.md): done
