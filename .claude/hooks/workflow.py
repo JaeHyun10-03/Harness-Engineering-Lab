@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Small workflow gate, not an agent runner. Python standard library only."""
 import argparse
-import glob
 import hashlib
 import json
 import os
@@ -307,8 +306,7 @@ def checked(state):
     evidence = task_dir(state) / 'evidence'
     latest = evidence / 'checks.json'
     receipt = read_json(latest)
-    if (not receipt.get('passed')
-            or not (receipt.get('results') or receipt.get('skipped_checks'))):
+    if not receipt.get('passed') or not receipt.get('results'):
         raise ValueError('필수 검사가 통과하지 않았습니다.')
     archive = receipt.get('archive')
     if state.get('verify_attempts', 0) and not archive:
@@ -324,79 +322,12 @@ def checked(state):
         name = result['log']
         if (not isinstance(name, str) or
                 not re.fullmatch(r'verify-[0-9]{3,}/check-[0-9]+\.log', name)
-                or (result.get('required', True) and result['exit_code'] != 0)):
+                or result['exit_code'] != 0):
             raise ValueError('검사 증거 형식이 잘못되었습니다.')
         actual = hashlib.sha256((evidence / name).read_bytes()).hexdigest()
         if result['log_hash'] != actual:
             raise ValueError('검사 로그가 변경되었습니다. 검사를 다시 실행하세요.')
     return receipt
-
-
-def configured_checks():
-    """Return resolved checks and their source, preserving the legacy format."""
-    config_path = ROOT / 'harness.json'
-    if config_path.exists():
-        root_text = str(ROOT)
-        if root_text not in sys.path:
-            sys.path.insert(0, root_text)
-        try:
-            from harness.config import load_config
-        except ImportError as error:
-            raise ValueError('harness.json을 사용하려면 harness 설정 모듈을 설치해야 합니다: ' + str(error))
-        checks = load_config(ROOT).get('checks', [])
-        if not checks:
-            raise ValueError('harness.json에 실행할 검사를 하나 이상 등록하세요.')
-        return checks, 'harness.json'
-
-    legacy_path = ROOT / '.claude/checks.json'
-    checks = read_json(legacy_path).get('checks', [])
-    if not isinstance(checks, list) or not checks:
-        raise ValueError('.claude/checks.json에 앱의 필수 검사 명령을 먼저 등록하세요.')
-    normalized = []
-    for index, check in enumerate(checks):
-        if (not isinstance(check, dict)
-                or not isinstance(check.get('argv'), list) or not check['argv']
-                or not all(isinstance(x, str) and x for x in check['argv'])
-                or type(check.get('timeout_seconds')) is not int
-                or not 1 <= check['timeout_seconds'] <= 3600):
-            raise ValueError('검사에는 argv 문자열 배열과 1~3600의 timeout_seconds가 필요합니다.')
-        normalized.append({
-            'id': 'legacy-check-{}'.format(index + 1),
-            'kind': 'unit',
-            'cwd': '.',
-            'argv': check['argv'],
-            'required': True,
-            'timeout_seconds': check['timeout_seconds'],
-        })
-    return normalized, '.claude/checks.json'
-
-
-def check_condition(check):
-    """Return whether a check applies and a stable evidence reason."""
-    condition = check.get('when')
-    if not condition:
-        return True, None
-
-    def matches(pattern):
-        return bool(glob.glob(str(ROOT / pattern), recursive=True))
-
-    any_patterns = condition.get('files_any')
-    if any_patterns and not any(matches(pattern) for pattern in any_patterns):
-        return False, 'when.files_any 불일치'
-    all_patterns = condition.get('files_all')
-    if all_patterns and not all(matches(pattern) for pattern in all_patterns):
-        return False, 'when.files_all 불일치'
-    return True, None
-
-
-def command_available(command, cwd):
-    """Check optional commands without invoking a shell."""
-    if '/' in command or '\\' in command:
-        candidate = Path(command)
-        if not candidate.is_absolute():
-            candidate = cwd / candidate
-        return candidate.is_file() and (os.name == 'nt' or os.access(str(candidate), os.X_OK))
-    return shutil.which(command) is not None
 
 
 def complete_evidence(state):
@@ -433,7 +364,15 @@ def verify(state):
         require_clear_spec(state, body)
         if state.get('approved_plan_snapshot') != plan_snapshot(state):
             raise ValueError('명세·테스트 기준이 바뀌었습니다. verifier 계획 검증 후 start를 다시 실행하세요.')
-    checks, checks_source = configured_checks()
+    checks = read_json(ROOT / '.claude/checks.json')['checks']
+    if not isinstance(checks, list) or not checks:
+        raise ValueError('.claude/checks.json에 앱의 필수 검사 명령을 먼저 등록하세요.')
+    for check in checks:
+        if (not isinstance(check.get('argv'), list) or not check['argv']
+                or not all(isinstance(x, str) and x for x in check['argv'])
+                or type(check.get('timeout_seconds')) is not int
+                or not 1 <= check['timeout_seconds'] <= 3600):
+            raise ValueError('검사에는 argv 문자열 배열과 1~3600의 timeout_seconds가 필요합니다.')
     before = snapshot(state)
     state['verify_attempts'] = state.get('verify_attempts', 0) + 1
     state['phase'] = 'verifying'
@@ -467,26 +406,12 @@ def verify(state):
     results = []
     skipped = []
     for i, check in enumerate(checks):
-        applies, skip_reason = check_condition(check)
-        check_cwd = (ROOT / check.get('cwd', '.')).resolve()
-        base_evidence = {
-            'id': check.get('id', 'check-{}'.format(i + 1)),
-            'argv': check['argv'],
-            'cwd': check_cwd.relative_to(ROOT).as_posix() if check_cwd != ROOT else '.',
-            'required': check.get('required', True),
-        }
-        if not applies:
-            skipped.append(dict(base_evidence, status='skipped', reason=skip_reason))
-            continue
-        if not check.get('required', True) and not command_available(check['argv'][0], check_cwd):
-            skipped.append(dict(base_evidence, status='skipped', reason='선택 검사 명령을 찾을 수 없음'))
-            continue
         log = run_dir / ('check-{}.log'.format(i + 1))
         check_started = datetime.now(timezone.utc)
         with log.open('w', encoding='utf-8') as output:
             try:
                 # No shell interpolation; commands are explicitly configured argument arrays.
-                process = subprocess.Popen(check['argv'], cwd=check_cwd, stdout=output,
+                process = subprocess.Popen(check['argv'], cwd=ROOT, stdout=output,
                                            stderr=subprocess.STDOUT,
                                            start_new_session=(os.name != 'nt'))
                 try:
@@ -506,32 +431,19 @@ def verify(state):
             except OSError as error:
                 output.write(str(error) + '\n')
                 code = 127
-        result = dict(base_evidence, status='passed' if code == 0 else 'failed',
-                      exit_code=code, log=run_dir.name + '/' + log.name,
-                      log_hash=hashlib.sha256(log.read_bytes()).hexdigest(),
-                      duration_seconds=round(
-                          (datetime.now(timezone.utc) - check_started).total_seconds(), 3))
-        results.append(result)
-        if code != 0 and check.get('required', True):
-            for remaining in checks[i + 1:]:
-                remaining_cwd = (ROOT / remaining.get('cwd', '.')).resolve()
-                skipped.append({
-                    'id': remaining.get('id', 'check-{}'.format(len(skipped) + i + 2)),
-                    'argv': remaining['argv'],
-                    'cwd': remaining_cwd.relative_to(ROOT).as_posix() if remaining_cwd != ROOT else '.',
-                    'required': remaining.get('required', True),
-                    'status': 'skipped',
-                    'reason': '앞선 필수 검사 실패',
-                })
+        results.append({'argv': check['argv'], 'exit_code': code,
+                        'log': run_dir.name + '/' + log.name,
+                        'log_hash': hashlib.sha256(log.read_bytes()).hexdigest(),
+                        'duration_seconds': round((datetime.now(timezone.utc) - check_started).total_seconds(), 3)})
+        if code != 0:
+            skipped = [item['argv'] for item in checks[i + 1:]]
             break
     after = snapshot(state)
-    required_failed = any(result['required'] and result['exit_code'] != 0 for result in results)
-    passed = not required_failed and before == after
+    passed = len(results) == len(checks) and all(x['exit_code'] == 0 for x in results) and before == after
     receipt = {
         'passed': passed, 'snapshot': after, 'unchanged_during_checks': before == after,
         'started_at': started, 'finished_at': now(), 'python': sys.version.split()[0],
-        'archive': run_dir.name + '/checks.json', 'checks_source': checks_source,
-        'skipped_checks': skipped,
+        'archive': run_dir.name + '/checks.json', 'skipped_checks': skipped,
         # Program-owned task records are removed from the dirty calculation.
         'git': {'head': head.strip() if head else None, 'dirty': None if porcelain is None else bool(porcelain.strip())},
         'results': results}

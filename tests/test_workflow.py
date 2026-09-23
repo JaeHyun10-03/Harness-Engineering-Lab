@@ -67,22 +67,6 @@ class WorkflowTests(unittest.TestCase):
         (self.root / '.claude/checks.json').write_text(json.dumps({
             'checks': [{'argv': argv, 'timeout_seconds': timeout}]}))
 
-    def set_harness_checks(self, checks):
-        shutil.copytree(ROOT / 'harness', self.root / 'harness',
-                        ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
-        shutil.copytree(ROOT / 'profiles', self.root / 'profiles')
-        (self.root / 'harness.json').write_text(json.dumps({
-            'schema_version': 1,
-            'project': {
-                'name': 'workflow-test',
-                'type': 'tooling',
-                'source_paths': ['app'],
-            },
-            'profile_defaults': {},
-            'profiles': [],
-            'checks': checks,
-        }))
-
     def state(self):
         return json.loads(self.run_cli('status').stdout)
 
@@ -243,114 +227,6 @@ class WorkflowTests(unittest.TestCase):
         self.run_cli('verify', expected=1)
         receipt = json.loads((self.task / 'evidence/checks.json').read_text())
         self.assertEqual(receipt['results'][0]['exit_code'], 124)
-
-    def test_harness_config_check_runs_in_configured_cwd(self):
-        worker = self.root / 'worker'
-        worker.mkdir()
-        self.set_harness_checks([{
-            'id': 'cwd-check',
-            'kind': 'unit',
-            'cwd': 'worker',
-            'argv': [sys.executable, '-c', 'import os; print(os.getcwd())'],
-            'required': True,
-            'timeout_seconds': 5,
-        }])
-        self.run_cli('start')
-        self.run_cli('verify')
-
-        receipt = json.loads((self.task / 'evidence/checks.json').read_text())
-        result = receipt['results'][0]
-        self.assertEqual(receipt['checks_source'], 'harness.json')
-        self.assertEqual(result['cwd'], 'worker')
-        self.assertIn(str(worker), (self.task / 'evidence' / result['log']).read_text())
-
-    def test_harness_config_condition_mismatch_is_skipped_with_evidence(self):
-        self.set_harness_checks([{
-            'id': 'conditional-check',
-            'kind': 'integration',
-            'cwd': '.',
-            'argv': [sys.executable, '-c', 'raise SystemExit(9)'],
-            'required': True,
-            'timeout_seconds': 5,
-            'when': {'files_any': ['feature-not-present/*.py']},
-        }])
-        self.run_cli('start')
-        self.run_cli('verify')
-
-        receipt = json.loads((self.task / 'evidence/checks.json').read_text())
-        self.assertTrue(receipt['passed'])
-        self.assertEqual(receipt['results'], [])
-        self.assertEqual(receipt['skipped_checks'][0]['status'], 'skipped')
-        self.assertIn('files_any', receipt['skipped_checks'][0]['reason'])
-        # A run consisting only of inapplicable checks remains valid review evidence.
-        self.run_cli('review-begin')
-
-    def test_missing_optional_command_is_skipped_and_required_check_continues(self):
-        self.set_harness_checks([
-            {
-                'id': 'optional-tool',
-                'kind': 'static',
-                'cwd': '.',
-                'argv': ['command-that-does-not-exist-for-harness-test'],
-                'required': False,
-                'timeout_seconds': 5,
-            },
-            {
-                'id': 'required-check',
-                'kind': 'unit',
-                'cwd': '.',
-                'argv': [sys.executable, '-c', 'print("required passed")'],
-                'required': True,
-                'timeout_seconds': 5,
-            },
-        ])
-        self.run_cli('start')
-        self.run_cli('verify')
-
-        receipt = json.loads((self.task / 'evidence/checks.json').read_text())
-        self.assertTrue(receipt['passed'])
-        self.assertEqual([result['id'] for result in receipt['results']], ['required-check'])
-        self.assertEqual(receipt['skipped_checks'][0]['id'], 'optional-tool')
-        self.assertIn('찾을 수 없음', receipt['skipped_checks'][0]['reason'])
-
-    def test_optional_check_failure_is_recorded_without_failing_required_checks(self):
-        self.set_harness_checks([
-            {
-                'id': 'optional-failure',
-                'kind': 'static',
-                'cwd': '.',
-                'argv': [sys.executable, '-c', 'raise SystemExit(6)'],
-                'required': False,
-                'timeout_seconds': 5,
-            },
-            {
-                'id': 'required-success',
-                'kind': 'unit',
-                'cwd': '.',
-                'argv': [sys.executable, '-c', 'print("ok")'],
-                'required': True,
-                'timeout_seconds': 5,
-            },
-        ])
-        self.run_cli('start')
-        self.run_cli('verify')
-
-        receipt = json.loads((self.task / 'evidence/checks.json').read_text())
-        self.assertTrue(receipt['passed'])
-        self.assertEqual(receipt['results'][0]['exit_code'], 6)
-        self.assertFalse(receipt['results'][0]['required'])
-        self.assertEqual(receipt['results'][1]['status'], 'passed')
-        self.run_cli('review-begin')
-
-    def test_legacy_checks_json_remains_the_fallback(self):
-        self.assertFalse((self.root / 'harness.json').exists())
-        self.run_cli('start')
-        self.run_cli('verify')
-
-        receipt = json.loads((self.task / 'evidence/checks.json').read_text())
-        self.assertEqual(receipt['checks_source'], '.claude/checks.json')
-        self.assertEqual(receipt['results'][0]['id'], 'legacy-check-1')
-        self.assertTrue(receipt['results'][0]['required'])
 
     def test_questions_waiting_and_loop_escape(self):
         self.assertEqual(self.hook('stop'), '')

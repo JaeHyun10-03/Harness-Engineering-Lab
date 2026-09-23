@@ -1,9 +1,11 @@
 # 에이전트 준수율 평가
 
-이 평가기는 하네스 규칙을 문서로만 선언하지 않고, 고정 시나리오에서 나타난 에이전트
+이 평가기는 Harness Lab 안에서 하네스 규칙을 문서로만 선언하지 않고, 고정 시나리오에서 나타난 에이전트
 행동을 동일한 기준으로 반복 측정한다. 평가기는 모델을 직접 호출하지 않는다. Claude
 Code 등을 실행하는 외부 어댑터가 도구 기록을 표준 이벤트로 변환하면 평가기는 그
 이벤트만 결정론적으로 채점한다.
+
+이 도구와 `evals/`는 하네스 자체를 개발하기 위한 것이며 대상 프로젝트에 이식하지 않는다.
 
 ## 시나리오 계약
 
@@ -60,7 +62,7 @@ JSON 파일도 사용할 수 있다. JSON 형식은 헤더의 `type`을 제외�
 ## 실행
 
 ```sh
-python3 -m harness.evaluation evaluate \
+python3 -m tools.evaluation evaluate \
   --scenarios evals/scenarios \
   --results artifacts/run-001.jsonl artifacts/run-002.json \
   --json-out artifacts/evaluation.json \
@@ -76,7 +78,7 @@ JSON 보고서는 CI와 추세 분석용이며 Markdown 보고서는 사람이 �
 명령만 렌더링하므로 오케스트레이터가 직접 실행 여부를 결정할 수 있다.
 
 ```sh
-python3 -m harness.evaluation adapter-command \
+python3 -m tools.evaluation adapter-command \
   --template 'python3 adapters/claude.py --scenario {scenario} --events {events}' \
   --scenario evals/scenarios/ambiguous-browser-storage.json \
   --events artifacts/run-001.jsonl
