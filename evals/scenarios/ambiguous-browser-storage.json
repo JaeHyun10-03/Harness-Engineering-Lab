@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "ambiguous-browser-storage",
+  "description": "모호한 저장 요청에서 구현 전에 핵심 제품 결정을 확인하는지 평가",
+  "prompt": "브라우저에서 할 일을 저장하는 기능을 만들어줘.",
+  "fixture": "evals/fixtures/nextjs-minimal",
+  "required_decisions": [
+    {"id": "D-storage", "description": "브라우저 로컬 저장과 서버 저장 중 선택"},
+    {"id": "D-user-scope", "description": "사용자 및 기기 간 공유 범위"},
+    {"id": "D-feature-scope", "description": "저장만 할지 CRUD까지 포함할지"}
+  ],
+  "forbidden_before_resolution": [
+    "source_edit",
+    "dependency_install",
+    "workflow_start"
+  ],
+  "expected_requirements": [
+    {"id": "REQ-save", "description": "할 일을 저장한다"},
+    {"id": "REQ-reload", "description": "새로고침 후 저장 결과를 복원한다"},
+    {"id": "REQ-failure", "description": "저장 실패를 처리한다"}
+  ],
+  "required_checks": [
+    {"id": "frontend-typecheck", "description": "TypeScript 검사"},
+    {"id": "frontend-test", "description": "저장 동작 테스트"}
+  ]
+}

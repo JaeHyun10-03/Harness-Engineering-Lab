@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "backend-spring",
+  "category": "backend",
+  "description": "Gradle 또는 Maven 기반 Spring Boot 프로젝트의 테스트와 패키징 검사",
+  "options": {
+    "path": {
+      "type": "path",
+      "default": "backend",
+      "description": "Gradle 또는 Maven 프로젝트 디렉터리"
+    },
+    "build_executable": {
+      "type": "string",
+      "default": "./gradlew",
+      "description": "Gradle/Maven Wrapper 또는 시스템 빌드 명령"
+    },
+    "test_task": {
+      "type": "string",
+      "default": "test",
+      "description": "테스트를 실행하는 Gradle task 또는 Maven phase"
+    },
+    "package_task": {
+      "type": "string",
+      "default": "build",
+      "description": "산출물을 만드는 Gradle task 또는 Maven phase"
+    }
+  },
+  "checks": [
+    {
+      "id": "backend-test",
+      "kind": "integration",
+      "cwd": "${path}",
+      "argv": [
+        "${build_executable}",
+        "${test_task}"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "Spring Boot 단위 및 통합 테스트"
+    },
+    {
+      "id": "backend-build",
+      "kind": "build",
+      "cwd": "${path}",
+      "argv": [
+        "${build_executable}",
+        "${package_task}"
+      ],
+      "required": true,
+      "timeout_seconds": 900,
+      "description": "배포 가능한 백엔드 산출물 생성; 도구 특성에 따라 테스트가 다시 실행될 수 있음"
+    }
+  ],
+  "rules": [
+    "트랜잭션 경계, 롤백 조건, 동시성 제어 방식을 명세한다.",
+    "예외 응답과 인증·인가 실패를 통합 테스트한다.",
+    "로그에 개인정보, 자격 증명, 토큰을 남기지 않는다."
+  ]
+}

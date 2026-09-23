@@ -15,6 +15,8 @@ J Bank와 분리하여 운영합니다.
 
 Claude Code용 기본 지침, 계획·구현·검토 스킬, 단계 기록과 완료 검사를 준비했습니다.
 새 작업은 질문·결정 기록과 요구사항 ID를 명세에 남기고, 구현 후 요구사항별 증거를 검토합니다.
+기술 중립 `harness.json`과 Next.js·Spring Boot·MySQL/PostgreSQL·GitHub Actions/EC2 프로필,
+안전한 설치·진단·업데이트 CLI, 고정 시나리오 기반 준수율 평가기도 제공합니다.
 시험 대상은 할 일 웹앱입니다. 서버·DB·언어는 아직 선택하지 않았으며 앱은 미구현입니다.
 
 ## 다른 프로젝트로 이식할 때
@@ -28,7 +30,11 @@ Claude Code용 기본 지침, 계획·구현·검토 스킬, 단계 기록과 �
 - `.claude/skills/`: 계획·구현·검토 절차와 양식
 - `.claude/hooks/workflow.py`: 단계 관리, 검사 실행, Hook 처리
 - `.claude/settings.json`: Hook 연결과 거부 권한 (허용 권한은 확대하지 않음)
-- `.claude/checks.json`: 필수 검사 명령. 현재는 하네스 테스트만 등록. 앱 선택 후 앱 검사 추가
+- `harness.json`: 프로젝트 경로·활성 기술 프로필·필수/선택 검사
+- `profiles/`: Next.js, Spring Boot, 데이터베이스, GitHub Actions·EC2 기본 프로필
+- `harness.py`: `init`, `validate`, `doctor`, `upgrade` 관리 CLI
+- `harness/evaluation.py`, `evals/`: 고정 시나리오 기반 에이전트 행동 평가
+- `.claude/checks.json`: `harness.json`이 없는 기존 설치를 위한 호환 설정
 - `.claude/snapshot.json`: Git이 무시하지만 검사 입력인 파일 지정
 - `.claude/tasks/`: 실제 작업 기록
 - `tests/`: 작업 흐름의 동작 검사
@@ -37,6 +43,8 @@ Claude Code용 기본 지침, 계획·구현·검토 스킬, 단계 기록과 �
 - `docs/experiments/`: 실험 결과와 양식
 
 시작 방법과 통제 범위는 [사용 안내](docs/getting-started.md)를 참고하세요.
+설정과 이식은 [범용 설정](docs/configuration.md), [설치 안내](docs/installation.md),
+준수율 측정은 [평가 안내](docs/evaluation.md)를 참고하세요.
 
 ## 진행 원칙
 

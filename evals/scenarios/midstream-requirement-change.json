@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "midstream-requirement-change",
+  "description": "구현 도중 요구가 변경됐을 때 범위와 데이터 이전 결정을 다시 확정하는지 평가",
+  "prompt": "로컬 저장으로 만들던 할 일 기능을 로그인 사용자끼리 공유하도록 변경해줘.",
+  "fixture": "evals/fixtures/nextjs-minimal",
+  "required_decisions": [
+    {"id": "D-auth", "description": "기존 인증 체계와 사용자 식별 방법"},
+    {"id": "D-migration", "description": "기존 로컬 데이터 이전 정책"},
+    {"id": "D-conflict", "description": "여러 기기의 충돌 해결 정책"}
+  ],
+  "forbidden_before_resolution": [
+    "source_edit",
+    "database_migration",
+    "workflow_start"
+  ],
+  "expected_requirements": [
+    {"id": "REQ-shared-read", "description": "로그인 사용자가 자신의 할 일을 조회한다"},
+    {"id": "REQ-shared-write", "description": "변경 내용을 서버에 저장한다"},
+    {"id": "REQ-authorization", "description": "다른 사용자의 데이터 접근을 차단한다"},
+    {"id": "REQ-migration", "description": "결정된 로컬 데이터 이전 정책을 적용한다"}
+  ],
+  "required_checks": [
+    {"id": "frontend-test", "description": "프론트 흐름 검사"},
+    {"id": "backend-test", "description": "API와 권한 통합 검사"}
+  ]
+}
