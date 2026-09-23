@@ -73,9 +73,38 @@ JSON 보고서는 CI와 추세 분석용이며 Markdown 보고서는 사람이 �
 
 ## 모델 어댑터 경계
 
-평가기는 외부 명령을 실행하지 않는다. 모델 호출, 임시 fixture 생성, Claude Code 도구
-로그 수집, 이벤트 변환은 별도 어댑터가 담당한다. 다음 명령은 안전하게 토큰화된 실행
-명령만 렌더링하므로 오케스트레이터가 직접 실행 여부를 결정할 수 있다.
+평가기 자체는 외부 명령을 실행하지 않는다. 실제 Claude Code 실행은 별도 어댑터가
+fixture를 임시 Git 저장소로 복사한 뒤 수행한다. 사용자 설정과 플러그인의 영향을 줄이기
+위해 project 설정만 로드하고 MCP 서버를 비활성화한다. 원본 stream-json, stderr,
+정규화 이벤트, 실행 메타데이터와 최종 평가 보고서를 각각 보존한다.
+
+대표 시나리오를 3회 반복하는 예시다. 호출마다 지정한 비용 상한과 시간 제한이 적용된다.
+
+```sh
+python3 -m tools.claude_adapter \
+  --scenario evals/scenarios/ambiguous-browser-storage.json \
+  --output-dir artifacts/claude-ambiguous-3runs \
+  --repeat 3 \
+  --model sonnet \
+  --max-budget-usd 0.45 \
+  --timeout-seconds 180
+```
+
+자연어 질문은 시나리오의 `required_decisions[].markers`와 일치할 때만 결정 ID로
+정규화한다. 코드 편집·의존성 설치·workflow 시작/완료 같은 행동은 실제 tool trace에서
+가져온다. 각 이벤트의 `evidence_source`로 두 근거를 구분한다. marker 변경은 평가 기준
+변경이므로 시나리오와 함께 코드 리뷰한다.
+
+검토된 marker를 변경한 뒤 모델 비용 없이 보존된 원본을 재채점할 수 있다.
+
+```sh
+python3 -m tools.claude_adapter \
+  --scenario evals/scenarios/ambiguous-browser-storage.json \
+  --output-dir artifacts/claude-ambiguous-final-3runs \
+  --replay-raw-dir artifacts/claude-ambiguous-final-3runs
+```
+
+다른 실행기를 연결할 때는 다음 명령으로 안전하게 토큰화된 실행 명령을 렌더링할 수 있다.
 
 ```sh
 python3 -m tools.evaluation adapter-command \

@@ -286,10 +286,12 @@ class WorkflowTests(unittest.TestCase):
         self.run_cli('complete', expected=1)
 
     def test_bash_gate(self):
-        denied = ['git push origin main', 'rm -rf build', 'rm -fr build', 'rm -f -r x', 'git restore x',
+        denied = ['git push --force origin main', 'git push origin main --force-with-lease',
+                  'git push origin --delete main', 'rm -rf build', 'rm -fr build', 'rm -f -r x', 'git restore x',
                   'cat .claude/tasks/t/evidence/check-1.log', 'python3  ".claude/hooks/workflow.py" hook-stop',
                   'git commit --no-verify -m x', 'sed -i s/a/b/ .claude/tasks/active.json']
-        allowed = ['git commit -m x', 'git status', 'python3 -m unittest discover -s tests',
+        allowed = ['git push origin main', 'git push', 'git commit -m x', 'git status',
+                   'python3 -m unittest discover -s tests',
                    'python3 .claude/hooks/workflow.py status', 'rm -f x.tmp', 'git checkout -b feat']
         for command in denied:
             self.assertEqual(self.decision(self.hook('bash', {'command': command})), 'deny', command)

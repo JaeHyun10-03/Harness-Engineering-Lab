@@ -5,7 +5,6 @@
       "Edit(/.claude/tasks/index.md)",
       "Edit(/.claude/tasks/**/state.json)",
       "Edit(/.claude/tasks/**/evidence/**)",
-      "Bash(git push:*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean:*)",
       "Bash(git restore:*)",

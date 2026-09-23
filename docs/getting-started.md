@@ -116,7 +116,7 @@ CI 병합·배포 차단과 정기 실행은 별도 연결이 필요합니다. �
 - 명세·테스트 기준 변경 뒤 새 계획 검증과 start 없이는 Edit·Write·NotebookEdit을 통한 코드 편집과 verify 거부. review pass는 모든 요구사항 ID에 대한 구현 위치·테스트 증거·통과 판정 표가 있어야 등록
 - Edit·Write·NotebookEdit는 구현 단계가 아니면 docs/, 루트 .md, 활성 작업의 task·progress·plan-review·review.md만 허용(그 외 앱 코드·tests·.claude 설정 전부 거부)
 - evidence/, state.json, active.json, tasks/index.md는 모든 단계에서 도구 수정 거부 (settings.json의 Edit 경로 거부는 Write에도 적용되며 Hook과 이중으로 동작)
-- Bash는 증거·상태 파일 언급, hook 직접 호출, git push·reset --hard·clean·restore·checkout --·--no-verify, rm -r 계열 거부. 검사 로그는 Read 도구로 읽음
+- Bash는 증거·상태 파일 언급, hook 직접 호출, 강제 push·원격 브랜치 삭제·reset --hard·clean·restore·checkout --·--no-verify, rm -r 계열 거부. 일반 `git push`와 `main` 직접 push는 허용하며 검사 로그는 Read 도구로 읽음
 - verifier 호출을 Agent Hook이 회차·snapshot과 함께 기록. review pass·fail은 현재 회차 기록을 요구하고, review-begin 전 결과 리뷰 호출은 거부
 - review pass는 review.md에 "## 독립 검증 결과" 본문과 대상 snapshot 문자열 요구
 - 필수 검사 명령을 실제로 실행하고 종료 코드·로그·시각·소요 시간·Python 버전·git HEAD를 실행별 evidence/verify-NNN/에 보존. evidence/checks.json과 changes.txt는 최신 실행을 가리키는 사본

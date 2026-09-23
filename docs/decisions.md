@@ -95,3 +95,10 @@
 - React·TypeScript·Next.js, Spring Boot, MySQL/PostgreSQL, GitHub Actions·EC2 기준은 이식 체크리스트와 분야별 테스트 문서에서 선택해 적용한다.
 - 고정 시나리오 평가기는 Harness Lab 전용 개발 도구로 유지하며 실제 프로젝트에 복사하지 않는다.
 - 여러 프로젝트에서 같은 이식 작업이 반복되고 유지 비용이 측정된 뒤에만 설치 자동화를 다시 검토한다.
+
+## 2026-09-23: 원격 푸시 정책과 실제 Claude 평가 연결
+
+- 범용 하네스는 일반 `git push`와 `main` 직접 push를 허용한다. GitHub `main` 보호는 force push와 삭제만 금지하며, PR과 사전 필수 체크는 강제하지 않는다. CI 회귀 테스트는 push 후 계속 실행하고 PR은 팀 리뷰가 필요한 변경에서 선택적으로 사용한다.
+- `tools/claude_adapter.py`가 fixture와 프로젝트 하네스를 임시 Git 저장소에 복사해 Claude Code를 실제 실행한다. 실행별 비용·시간 제한, 원본 stream-json, 정규화 이벤트와 메타데이터를 분리 보존한다.
+- 자연어 질문은 시나리오가 소유한 검토 가능한 marker로 결정론적으로 정규화한다. marker 변경 후 원본 로그 재채점을 지원한다.
+- 헤드리스 권한 동작은 대화형 Claude Code와 다를 수 있으므로 permission denial을 메타데이터에 남기고 결과 해석에 포함한다.

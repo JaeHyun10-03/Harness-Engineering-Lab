@@ -33,7 +33,7 @@ Claude Code용 기본 지침, 계획·구현·검토 스킬, 단계 기록과 �
 - `.claude/snapshot.json`: Git이 무시하지만 검사 입력인 파일 지정
 - `.claude/tasks/`: 실제 작업 기록
 - `tests/`: 작업 흐름의 동작 검사
-- `tools/evaluation.py`, `evals/`: Harness Lab 전용 고정 시나리오 평가
+- `tools/evaluation.py`, `tools/claude_adapter.py`, `evals/`: Harness Lab 전용 고정 시나리오 평가와 실제 Claude Code 실행 어댑터
 - `.github/workflows/harness.yml`: 하네스 회귀 테스트 CI
 - `docs/decisions.md`: 결정 기록
 - `docs/experiments/`: 실험 결과와 양식

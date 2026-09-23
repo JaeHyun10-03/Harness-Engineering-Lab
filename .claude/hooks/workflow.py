@@ -24,7 +24,8 @@ PROTECTED = re.compile(r'^\.claude/tasks/(active\.json|index\.md|[^/]+/(state\.j
 PLANNING_DOCS = ('task', 'progress', 'plan-review', 'review')
 BASH_DENY = re.compile(
     r'active\.json|state\.json|/evidence\b|workflow\.py["\']?\s+["\']?hook-'
-    r'|git\s+push|reset\s+--hard|git\s+clean|git\s+restore\b|git\s+checkout\s+--|--no-verify'
+    r'|git\s+push\b[^\n]*(--force(?:-with-lease|-if-includes)?|-f(?:\s|$)|--delete\b)'
+    r'|reset\s+--hard|git\s+clean|git\s+restore\b|git\s+checkout\s+--|--no-verify'
     r'|\brm\b.*(\s-[a-zA-Z]*[rR]|--recursive)')
 
 
